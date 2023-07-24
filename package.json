@@ -1,0 +1,33 @@
+{
+  "name": "iot-backend",
+  "version": "1.0.0",
+  "description": "Backend del sistema de monitoreo IoT",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "authors": [
+    {
+      "name": "Benítez, Matías Agustín",
+      "email": "matiasagbenitez@gmail.com"
+    },
+    {
+      "name": "Lacheski, Martín Aníbal",
+      "email": "martinlacheski@gmail.com"
+    }
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.1",
+    "moment": "^2.29.4",
+    "mongoose": "^7.4.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
