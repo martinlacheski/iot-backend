@@ -1,5 +1,6 @@
 const { response } = require("express");
 const Country = require("../models/Country");
+const Province = require("../models/Province");
 
 const getCountries = async (req, res = response) => {
   try {
@@ -102,6 +103,15 @@ const deleteCountry = async (req, res = response) => {
         ok: false,
         msg: "El país no existe.",
       });
+    }
+
+    // Verificar si el país tiene provincias
+    const provinces = await Province.find({ country: countryId });
+    if (provinces.length > 0) {
+        return res.status(400).json({
+            ok: false,
+            msg: "El país tiene provincias asociadas.",
+        });
     }
 
     // Eliminamos el país
