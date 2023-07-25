@@ -22,6 +22,7 @@ app.use('/api/organizations', require('./routes/organizationsRoutes'));
 app.use('/api/branches', require('./routes/branchesRoutes'));
 app.use('/api/types-of-equipments', require('./routes/typesOfEquipmentsRoutes'));
 app.use('/api/equipments', require('./routes/equipmentsRoutes'));
+app.use('/api/types-of-environments', require('./routes/typesOfEnvironmentsRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
