@@ -73,6 +73,15 @@ const updateProvince = async (req, res = response) => {
       });
     }
 
+    // Verificar si el país existe
+    const countryExists = await Country.findById(req.body.countryId);
+    if (!countryExists) {
+      return res.status(404).json({
+        ok: false,
+        msg: "El país no existe.",
+      });
+    }
+
     // Verificar si el nombre de la provincia ya existe en el país
     provinceExists = await Province.findOne({
       name: req.body.name,
