@@ -19,6 +19,7 @@ app.use('/api/countries', require('./routes/countriesRoutes'));
 app.use('/api/provinces', require('./routes/provincesRoutes'));
 app.use('/api/cities', require('./routes/citiesRoutes'));
 app.use('/api/organizations', require('./routes/organizationsRoutes'));
+app.use('/api/branches', require('./routes/branchesRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
