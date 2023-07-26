@@ -19,11 +19,4 @@ const CitySchema = Schema({
 // Verificar si la ciudad ya existe en la provincia
 CitySchema.index({ name: 1, province: 1 }, { unique: true });
 
-// Devolver id en vez de _id
-CitySchema.method("toJSON", function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
-});
-
 module.exports = model("City", CitySchema);

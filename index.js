@@ -15,9 +15,9 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/countries', require('./routes/countriesRoutes'));
-app.use('/api/provinces', require('./routes/provincesRoutes'));
-app.use('/api/cities', require('./routes/citiesRoutes'));
+app.use('/api/countries', require('./routes/countryRoutes'));
+app.use('/api/provinces', require('./routes/provinceRoutes'));
+app.use('/api/cities', require('./routes/cityRoutes'));
 app.use('/api/organizations', require('./routes/organizationsRoutes'));
 app.use('/api/branches', require('./routes/branchesRoutes'));
 app.use('/api/types-of-equipments', require('./routes/typesOfEquipmentsRoutes'));

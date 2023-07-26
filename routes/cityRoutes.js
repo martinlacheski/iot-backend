@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getCities, createCity, updateCity, deleteCity } = require('../controllers/citiesController');
+const { getCities, createCity, updateCity, deleteCity } = require('../controllers/cityController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');

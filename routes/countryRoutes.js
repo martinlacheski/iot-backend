@@ -1,43 +1,41 @@
-/* RUTAS DE PROVINCIAS
- * Ruta: host + /api/provinces
+/* RUTAS DE PAÍSES
+ * Ruta: host + /api/countries
  */
 
 const { Router } = require('express');
-const { getProvinces, createProvince, updateProvince, deleteProvince } = require('../controllers/provincesController');
+const { getCountries, createCountry, updateCountry, deleteCountry } = require('../controllers/countryController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');
 
 const router = Router();
 
-// GET PROVINCES
-router.get('/', validateJWT, getProvinces);
+// GET COUNTRIES
+router.get('/', validateJWT, getCountries);
 
-// CREATE PROVINCE
+// CREATE COUNTRY
 router.post(
     '/',
     [
         validateJWT,
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
-        check('countryId', 'El id del país es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    createProvince
+    createCountry
 );
 
-// UPDATE PROVINCE
+// UPDATE COUNTRY
 router.put(
     '/:id',
     [
         validateJWT,
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
-        check('countryId', 'El id del país es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    updateProvince
+    updateCountry
 );
 
 // DELETE COUNTRY
-router.delete('/:id', validateJWT, deleteProvince);
+router.delete('/:id', validateJWT, deleteCountry);
 
 module.exports = router;
