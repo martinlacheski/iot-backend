@@ -27,6 +27,7 @@ app.use('/api/environments', require('./routes/environmentsRoutes'));
 app.use('/api/types-of-boards', require('./routes/typesOfBoardsRoutes'));
 app.use('/api/boards', require('./routes/boardsRoutes'));
 app.use('/api/types-of-sensors', require('./routes/typesOfSensorRoutes'));
+app.use('/api/sensors', require('./routes/sensorsRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {

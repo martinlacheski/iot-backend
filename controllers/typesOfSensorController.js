@@ -63,7 +63,7 @@ const updateTypeOfSensor = async (req, res = response) => {
         const { name } = req.body;
         if (name) {
             let typeOfSensorExists = await TypeOfSensor.findOne({ name });
-            if (typeOfSensorExists) {
+            if (typeOfSensorExists && typeOfSensorExists.name !== typeOfSensor.name) {
                 return res.status(400).json({
                     ok: false,
                     msg: 'El tipo de sensor ya existe.'

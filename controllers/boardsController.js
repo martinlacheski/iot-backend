@@ -127,6 +127,7 @@ const updateBoard = async (req, res = response) => {
 
     res.json({
       ok: true,
+      msg: "Placa actualizada con éxito.",
       board: boardBD,
     });
   } catch (error) {
