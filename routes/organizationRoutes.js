@@ -8,7 +8,7 @@ const {
   createOrganization,
   updateOrganization,
   deleteOrganization,
-} = require("../controllers/organizationsController");
+} = require("../controllers/organizationController");
 const { validateJWT } = require("../middlewares/validateJWT");
 const { validateFields } = require("../middlewares/validateFields");
 const { check } = require("express-validator");

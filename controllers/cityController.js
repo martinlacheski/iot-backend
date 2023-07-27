@@ -6,16 +6,10 @@ const Branch = require("../models/Branch");
 const { Types } = require("mongoose");
 
 /**
- * Obtiene todas las ciudades.
- * @param {Request} req - La solicitud HTTP.
- * @param {Response} res - La respuesta HTTP.
- * @returns {Response} - La respuesta con un array de ciudades o un mensaje de error en caso de fallo.
- */
-/**
  * Obtener todas las ciudades.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>}
+ * @returns {Promise<void>} - La respuesta con un array de ciudades o un mensaje de error en caso de fallo.
  */
 const getCities = async (req, res = response) => {
   try {
@@ -37,7 +31,7 @@ const getCities = async (req, res = response) => {
  * Crear una nueva ciudad.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>}
+ * @returns {Promise<void>} - La respuesta con la ciudad creada o un mensaje de error en caso de fallo.
  */
 const createCity = async (req, res = response) => {
   const { provinceId, name } = req.body;
@@ -94,7 +88,7 @@ const createCity = async (req, res = response) => {
  * Actualizar una ciudad existente.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>}
+ * @returns {Promise<void>} - La respuesta con la ciudad actualizada o un mensaje de error en caso de fallo.
  */
 const updateCity = async (req, res = response) => {
   const cityId = req.params.id;
@@ -177,7 +171,7 @@ const updateCity = async (req, res = response) => {
  * Eliminar una ciudad existente.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>}
+ * @returns {Promise<void>} - La respuesta con un mensaje de éxito o un mensaje de error en caso de fallo.
  */
 const deleteCity = async (req, res = response) => {
   const cityId = req.params.id;
