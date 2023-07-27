@@ -1,19 +1,19 @@
-/* RUTAS DE TIPOS DE EQUIPAMIENTOS
- * Ruta: host + /api/typesOfEquipments
- */
+/* RUTAS DE TIPOS DE ENTORNOS
+    * Ruta: host + /api/types-of-environments
+*/
 
 const { Router } = require('express');
-const { getTypesOfEquipments, createTypeOfEquipment, updateTypeOfEquipment, deleteTypeOfEquipment } = require('../controllers/typesOfEquipmentsController');
+const { getTypesOfEnvironments, createTypeOfEnvironment, updateTypeOfEnvironment, deleteTypeOfEnvironment } = require('../controllers/typeOfEnvironmentController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');
 
 const router = Router();
 
-// GET TYPES OF EQUIPMENTS
-router.get('/', validateJWT, getTypesOfEquipments);
+// GET TYPES OF ENVIRONMENTS
+router.get('/', validateJWT, getTypesOfEnvironments);
 
-// CREATE TYPE OF EQUIPMENT
+// CREATE TYPE OF ENVIRONMENT
 router.post(
     '/',
     [
@@ -21,10 +21,10 @@ router.post(
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    createTypeOfEquipment
+    createTypeOfEnvironment
 );
 
-// UPDATE TYPE OF EQUIPMENT
+// UPDATE TYPE OF ENVIRONMENT
 router.put(
     '/:id',
     [
@@ -32,10 +32,10 @@ router.put(
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    updateTypeOfEquipment
+    updateTypeOfEnvironment
 );
 
-// DELETE TYPE OF EQUIPMENT
-router.delete('/:id', validateJWT, deleteTypeOfEquipment);
+// DELETE TYPE OF ENVIRONMENT
+router.delete('/:id', validateJWT, deleteTypeOfEnvironment);
 
 module.exports = router;

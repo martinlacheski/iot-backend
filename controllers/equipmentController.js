@@ -1,7 +1,15 @@
 const { response } = require("express");
 const Equipment = require("../models/Equipment");
 const TypeOfEquipment = require("../models/TypeOfEquipment");
+const Environment = require("../models/Environment");
+const { Types } = require("mongoose");
 
+/**
+ * Obtiene todos los equipos de la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de búsqueda es completada.
+ */
 const getEquipments = async (req, res = response) => {
   try {
     const equipments = await Equipment.find();
@@ -18,15 +26,26 @@ const getEquipments = async (req, res = response) => {
   }
 };
 
+/**
+ * Crea un nuevo equipo y lo guarda en la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
+ */
 const createEquipment = async (req, res = response) => {
-  const equipment = new Equipment(req.body);
-
   try {
-    equipment.typeOfEquipment = req.body.typeOfEquipmentId;
+    const { typeOfEquipmentId, description, quantity } = req.body;
+    // Verificar si el ID del tipo de equipo es válido
+    if (!Types.ObjectId.isValid(typeOfEquipmentId)) {
+      return res.status(400).json({
+        ok: false,
+        msg: "ID de tipo de equipo inválido.",
+      });
+    }
 
     // Verificar si el tipo de equipo existe
     const typeOfEquipmentExists = await TypeOfEquipment.findById(
-      equipment.typeOfEquipment
+      typeOfEquipmentId
     );
     if (!typeOfEquipmentExists) {
       return res.status(404).json({
@@ -37,26 +56,29 @@ const createEquipment = async (req, res = response) => {
 
     // Verificar si el equipo ya existe
     const equipmentExists = await Equipment.findOne({
-      description: equipment.description,
-      typeOfEquipment: equipment.typeOfEquipment,
+      description,
+      typeOfEquipment: typeOfEquipmentId,
+      quantity,
     });
-
     if (equipmentExists) {
       return res.status(400).json({
         ok: false,
-        msg: "El equipo ya existe.",
+        msg: "El equipo que intenta crear ya existe.",
       });
     }
 
-    // Quantity must be greater than 0
-    if (equipment.quantity < 1) {
+    // Cantidad debe ser mayor a 0
+    if (quantity < 1) {
       return res.status(400).json({
         ok: false,
         msg: "La cantidad debe ser mayor a 0.",
       });
     }
 
-    const equipmentDB = await equipment.save();
+    const equipmentDB = await new Equipment({
+      ...req.body,
+      typeOfEquipment: typeOfEquipmentId,
+    }).save();
 
     res.json({
       ok: true,
@@ -72,16 +94,29 @@ const createEquipment = async (req, res = response) => {
   }
 };
 
+/**
+ * Actualiza un equipo existente en la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de actualización es completada.
+ */
 const updateEquipment = async (req, res = response) => {
   const equipmentId = req.params.id;
-
   try {
+    // Verificar si el ID del equipo es válido
+    if (!Types.ObjectId.isValid(equipmentId)) {
+      return res.status(400).json({
+        ok: false,
+        msg: "ID de equipo inválido.",
+      });
+    }
+
     // Verificar si el equipo existe
     let equipmentExists = await Equipment.findById(equipmentId);
     if (!equipmentExists) {
       return res.status(404).json({
         ok: false,
-        msg: "El equipo no existe.",
+        msg: "El equipo que intenta actualizar no existe.",
       });
     }
 
@@ -92,7 +127,7 @@ const updateEquipment = async (req, res = response) => {
     if (!typeOfEquipmentExists) {
       return res.status(404).json({
         ok: false,
-        msg: "El tipo de equipo no existe.",
+        msg: "El tipo de equipo que desea asignar no existe.",
       });
     }
 
@@ -100,8 +135,8 @@ const updateEquipment = async (req, res = response) => {
     equipmentExists = await Equipment.findOne({
       description: req.body.description,
       typeOfEquipment: req.body.typeOfEquipmentId,
+      quantity: req.body.quantity,
     });
-
     if (equipmentExists && equipmentExists.id != equipmentId) {
       return res.status(400).json({
         ok: false,
@@ -142,10 +177,24 @@ const updateEquipment = async (req, res = response) => {
   }
 };
 
+/**
+ * Elimina un equipo existente en la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de eliminación es completada.
+ */
 const deleteEquipment = async (req, res = response) => {
   const equipmentId = req.params.id;
-
   try {
+    // Verificar si el ID del equipo es válido
+    if (!Types.ObjectId.isValid(equipmentId)) {
+      return res.status(400).json({
+        ok: false,
+        msg: "ID de equipo inválido.",
+      });
+    }
+
+    // Verificar si el equipo existe
     let equipmentExists = await Equipment.findById(equipmentId);
     if (!equipmentExists) {
       return res.status(404).json({
@@ -154,6 +203,21 @@ const deleteEquipment = async (req, res = response) => {
       });
     }
 
+    // TODO: Verificar si el equipo está en el objeto de equipamientos de algun Environment
+    const environments = await Environment.find();
+    for (const environment of environments) {
+      for (const equipment of environment.equipments) {
+        if (equipment == equipmentId) {
+          return res.status(400).json({
+            ok: false,
+            msg:
+              "El equipo que intenta eliminar está asignado a un ambiente. Elimine el equipo del ambiente y vuelva a intentarlo.",
+          });
+        }
+      }
+    }
+
+    // Eliminar equipo
     await Equipment.findByIdAndDelete(equipmentId);
 
     res.json({
@@ -170,8 +234,8 @@ const deleteEquipment = async (req, res = response) => {
 };
 
 module.exports = {
-    getEquipments,
-    createEquipment,
-    updateEquipment,
-    deleteEquipment,
+  getEquipments,
+  createEquipment,
+  updateEquipment,
+  deleteEquipment,
 };
