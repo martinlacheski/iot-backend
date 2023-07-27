@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getBranches, createBranch, updateBranch, deleteBranch } = require('../controllers/branchesController');
+const { getBranches, createBranch, updateBranch, deleteBranch } = require('../controllers/branchController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');

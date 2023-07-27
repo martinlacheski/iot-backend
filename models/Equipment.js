@@ -21,13 +21,6 @@ const EquipmentSchema = Schema({
 });
 
 // Verificar si el equipo ya existe
-EquipmentSchema.index({ description: 1, typeOfEquipment: 1 }, { unique: true });
-
-// Devolver id en vez de _id
-EquipmentSchema.method("toJSON", function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
-});
+EquipmentSchema.index({ description: 1, typeOfEquipment: 1, quantity: 1 }, { unique: true });
 
 module.exports = model("Equipment", EquipmentSchema, "equipments");

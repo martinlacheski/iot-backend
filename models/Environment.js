@@ -37,10 +37,7 @@ const EnvironmentSchema = Schema({
     },
 });
 
-EnvironmentSchema.method('toJSON', function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
-});
+// Verificar si el ambiente ya existe en la sucursal y tipo de ambiente
+EnvironmentSchema.index({ name: 1, branch: 1, typeOfEnvironment: 1 }, { unique: true });
 
 module.exports = model('Environment', EnvironmentSchema);

@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getEquipments, createEquipment, updateEquipment, deleteEquipment } = require('../controllers/equipmentsController');
+const { getEquipments, createEquipment, updateEquipment, deleteEquipment } = require('../controllers/equipmentController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');

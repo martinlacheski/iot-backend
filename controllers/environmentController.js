@@ -3,7 +3,15 @@ const Environment = require("../models/Environment");
 const TypeOfEnvironment = require("../models/TypeOfEnvironment");
 const Branch = require("../models/Branch");
 const Equipment = require("../models/Equipment");
+const Board = require("../models/Board");
+const { Types } = require("mongoose");
 
+/**
+ * Obtiene todos los  ambientes de la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de búsqueda es completada.
+ */
 const getEnvironments = async (req, res = response) => {
     try {
         const environments = await Environment.find();
@@ -20,14 +28,34 @@ const getEnvironments = async (req, res = response) => {
     }
 };
 
+/**
+ * Crea un nuevo ambiente en la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
+ * @throws {Error} Si algún error ocurre durante la creación del ambiente.
+ */
 const createEnvironment = async (req, res = response) => {
-    const environment = new Environment(req.body);
+    const { name, typeOfEnvironmentId, branchId } = req.body;
     try {
-        environment.typeOfEnvironment = req.body.typeOfEnvironmentId;
-        environment.branch = req.body.branchId;
+        // Verificar si el ID del tipo de ambiente es válido
+        if (!Types.ObjectId.isValid(typeOfEnvironmentId)) {
+            return res.status(400).json({
+                ok: false,
+                msg: "ID de tipo de ambiente inválido.",
+            });
+        }
+
+        // Verificar si el ID de la sucursal es válido
+        if (!Types.ObjectId.isValid(branchId)) {
+            return res.status(400).json({
+                ok: false,
+                msg: "ID de sucursal inválido.",
+            });
+        }
 
         // Verificar si el tipo de ambiente existe
-        const typeOfEnvironmentExists = await TypeOfEnvironment.findById(environment.typeOfEnvironment);
+        const typeOfEnvironmentExists = await TypeOfEnvironment.findById(typeOfEnvironmentId);
         if (!typeOfEnvironmentExists) {
             return res.status(404).json({
                 ok: false,
@@ -36,7 +64,7 @@ const createEnvironment = async (req, res = response) => {
         }
 
         // Verificar si la sucursal existe
-        const branchExists = await Branch.findById(environment.branch);
+        const branchExists = await Branch.findById(branchId);
         if (!branchExists) {
             return res.status(404).json({
                 ok: false,
@@ -44,28 +72,62 @@ const createEnvironment = async (req, res = response) => {
             });
         }
 
-        // Si el ambiente tiene equipos, verificar que existan
-        if (environment.equipments?.length > 0) {
-            for (let i = 0; i < environment.equipments.length; i++) {
-                const equipmentExists = await Equipment.findById(environment.equipments[i]);
-                if (!equipmentExists) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: "Equipamiento no encontrado.",
-                    });
-                }
+        // Verificar si el ambiente ya existe en la sucursal y tipo de ambiente
+        let environmentExists = await Environment.findOne({
+            name,
+            branch: branchId,
+            typeOfEnvironment: typeOfEnvironmentId,
+        });
+
+        if (environmentExists) {
+            return res.status(400).json({
+                ok: false,
+                msg: "El ambiente ya existe en la sucursal y tipo de ambiente.",
+            });
+        }
+
+        // Crear el objeto de ambiente
+        const environmentData = {
+            name,
+            typeOfEnvironment: typeOfEnvironmentId,
+            branch: branchId,
+            floor: req.body.floor,
+            room: req.body.room,
+            capacity: req.body.capacity,
+            surface: req.body.surface,
+            equipments: req.body.equipments,
+            observations: req.body.observations,
+        };
+
+        // Verificar si los equipos existen
+        const equipmentIds = req.body.equipments || [];
+        if (equipmentIds.length > 0) {
+            const equipmentExists = await Equipment.find({ _id: { $in: equipmentIds } });
+            if (equipmentExists.length !== equipmentIds.length) {
+                return res.status(404).json({
+                    ok: false,
+                    msg: "Equipamiento no encontrado.",
+                });
             }
         }
 
-        const environmentDB = await environment.save();
+        // Guardar el ambiente y manejar el error de índice único
+        const environmentDB = await Environment.create(environmentData);
 
         res.json({
             ok: true,
             msg: "Ambiente creado correctamente.",
             environment: environmentDB,
         });
-
     } catch (error) {
+        if (error.code === 11000) {
+            // El error 11000 corresponde a un error de índice único duplicado
+            return res.status(400).json({
+                ok: false,
+                msg: "Ya existe un ambiente con los mismos valores para name, branch y typeOfEnvironment.",
+            });
+        }
+
         console.log(error);
         res.status(500).json({
             ok: false,
@@ -74,13 +136,22 @@ const createEnvironment = async (req, res = response) => {
     }
 };
 
+
 const updateEnvironment = async (req, res = response) => {
     const environmentId = req.params.id;
-    const environment = req.body;
+    const environmentData = req.body;
 
     try {
+        // Verificar si el ID del ambiente es válido
+        if (!Types.ObjectId.isValid(environmentId)) {
+            return res.status(400).json({
+                ok: false,
+                msg: "ID de ambiente inválido.",
+            });
+        }
+
         // Verificar si el ambiente existe
-        let environmentExists = await Environment.findById(environmentId);
+        const environmentExists = await Environment.findById(environmentId);
         if (!environmentExists) {
             return res.status(404).json({
                 ok: false,
@@ -88,8 +159,24 @@ const updateEnvironment = async (req, res = response) => {
             });
         }
 
+        // Verificar si el ID del tipo de ambiente es válido
+        if (!Types.ObjectId.isValid(environmentData.typeOfEnvironmentId)) {
+            return res.status(400).json({
+                ok: false,
+                msg: "ID de tipo de ambiente inválido.",
+            });
+        }
+
+        // Verificar si el ID de la sucursal es válido
+        if (!Types.ObjectId.isValid(environmentData.branchId)) {
+            return res.status(400).json({
+                ok: false,
+                msg: "ID de sucursal inválido.",
+            });
+        }
+
         // Verificar si el tipo de ambiente existe
-        const typeOfEnvironmentExists = await TypeOfEnvironment.findById(req.body.typeOfEnvironmentId);
+        const typeOfEnvironmentExists = await TypeOfEnvironment.findById(environmentData.typeOfEnvironmentId);
         if (!typeOfEnvironmentExists) {
             return res.status(404).json({
                 ok: false,
@@ -98,7 +185,7 @@ const updateEnvironment = async (req, res = response) => {
         }
 
         // Verificar si la sucursal existe
-        const branchExists = await Branch.findById(req.body.branchId);
+        const branchExists = await Branch.findById(environmentData.branchId);
         if (!branchExists) {
             return res.status(404).json({
                 ok: false,
@@ -106,21 +193,19 @@ const updateEnvironment = async (req, res = response) => {
             });
         }
 
-        // Si el ambiente tiene equipos, verificar que existan
-        // console.log(environment.equipments);
-        if (environment.equipments?.length > 0) {
-            for (let i = 0; i < environment.equipments.length; i++) {
-                const equipmentExists = await Equipment.findById(environment.equipments[i]);
-                if (!equipmentExists) {
-                    return res.status(404).json({
-                        ok: false,
-                        msg: "Equipamiento no encontrado.",
-                    });
-                }
+        // Verificar si los equipos existen
+        const equipmentIds = environmentData.equipments || [];
+        if (equipmentIds.length > 0) {
+            const equipmentExists = await Equipment.find({ _id: { $in: equipmentIds } });
+            if (equipmentExists.length !== equipmentIds.length) {
+                return res.status(404).json({
+                    ok: false,
+                    msg: "Equipamiento no encontrado.",
+                });
             }
         }
 
-        const environmentDB = await Environment.findByIdAndUpdate(environmentId, environment, { new: true });
+        const environmentDB = await Environment.findByIdAndUpdate(environmentId, environmentData, { new: true });
 
         res.json({
             ok: true,
@@ -137,6 +222,13 @@ const updateEnvironment = async (req, res = response) => {
     }
 };
 
+/**
+ * Elimina un ambiente de la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de eliminación es completada.
+ * @throws {Error} Si algún error ocurre durante la eliminación del ambiente.
+ */
 const deleteEnvironment = async (req, res = response) => {
     const environmentId = req.params.id;
 
@@ -150,12 +242,12 @@ const deleteEnvironment = async (req, res = response) => {
             });
         }
 
-        // Verificar si el ambiente está siendo usado
-        const environmentInUse = await Environment.findOne({ _id: environmentId, equipments: { $exists: true, $not: { $size: 0 } } });
-        if (environmentInUse) {
+        // Verificar si el ambiente está siendo referencia en la colección "Board"
+        const environmentReferenced = await Board.exists({ environment: environmentId });
+        if (environmentReferenced) {
             return res.status(400).json({
                 ok: false,
-                msg: "El ambiente está siendo usado.",
+                msg: "El ambiente está siendo referenciado en alguna placa.",
             });
         }
 

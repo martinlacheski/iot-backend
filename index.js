@@ -15,14 +15,14 @@ app.use(express.json());
 
 // Rutas
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/countries', require('./routes/countriesRoutes'));
-app.use('/api/provinces', require('./routes/provincesRoutes'));
-app.use('/api/cities', require('./routes/citiesRoutes'));
-app.use('/api/organizations', require('./routes/organizationsRoutes'));
-app.use('/api/branches', require('./routes/branchesRoutes'));
-app.use('/api/types-of-equipments', require('./routes/typesOfEquipmentsRoutes'));
-app.use('/api/equipments', require('./routes/equipmentsRoutes'));
-app.use('/api/types-of-environments', require('./routes/typesOfEnvironmentsRoutes'));
+app.use('/api/countries', require('./routes/countryRoutes'));
+app.use('/api/provinces', require('./routes/provinceRoutes'));
+app.use('/api/cities', require('./routes/cityRoutes'));
+app.use('/api/organizations', require('./routes/organizationRoutes'));
+app.use('/api/branches', require('./routes/branchRoutes'));
+app.use('/api/types-of-equipments', require('./routes/typeOfEquipmentRoutes'));
+app.use('/api/equipments', require('./routes/equipmentRoutes'));
+app.use('/api/types-of-environments', require('./routes/typeOfEnvironmentRoutes'));
 app.use('/api/environments', require('./routes/environmentsRoutes'));
 app.use('/api/types-of-boards', require('./routes/typesOfBoardsRoutes'));
 app.use('/api/boards', require('./routes/boardsRoutes'));

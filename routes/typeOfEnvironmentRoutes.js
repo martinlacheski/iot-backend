@@ -1,19 +1,19 @@
-/* RUTAS DE PAÍSES
- * Ruta: host + /api/countries
- */
+/* RUTAS DE TIPOS DE ENTORNOS
+    * Ruta: host + /api/types-of-environments
+*/
 
 const { Router } = require('express');
-const { getCountries, createCountry, updateCountry, deleteCountry } = require('../controllers/countriesController');
+const { getTypesOfEnvironments, createTypeOfEnvironment, updateTypeOfEnvironment, deleteTypeOfEnvironment } = require('../controllers/typeOfEnvironmentController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');
 
 const router = Router();
 
-// GET COUNTRIES
-router.get('/', validateJWT, getCountries);
+// GET TYPES OF ENVIRONMENTS
+router.get('/', validateJWT, getTypesOfEnvironments);
 
-// CREATE COUNTRY
+// CREATE TYPE OF ENVIRONMENT
 router.post(
     '/',
     [
@@ -21,10 +21,10 @@ router.post(
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    createCountry
+    createTypeOfEnvironment
 );
 
-// UPDATE COUNTRY
+// UPDATE TYPE OF ENVIRONMENT
 router.put(
     '/:id',
     [
@@ -32,10 +32,10 @@ router.put(
         check('name', 'El nombre es obligatorio.').not().isEmpty(),
         validateFields,
     ],
-    updateCountry
+    updateTypeOfEnvironment
 );
 
-// DELETE COUNTRY
-router.delete('/:id', validateJWT, deleteCountry);
+// DELETE TYPE OF ENVIRONMENT
+router.delete('/:id', validateJWT, deleteTypeOfEnvironment);
 
 module.exports = router;

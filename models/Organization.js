@@ -36,11 +36,4 @@ const OrganizationSchema = Schema({
 // Verificar si la organización ya existe en la ciudad
 OrganizationSchema.index({ name: 1, city: 1 }, { unique: true });
 
-// Devolver id en vez de _id
-OrganizationSchema.method("toJSON", function () {
-    const { __v, _id, ...object } = this.toObject();
-    object.id = _id;
-    return object;
-});
-
 module.exports = model("Organization", OrganizationSchema);
