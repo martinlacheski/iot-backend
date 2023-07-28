@@ -136,7 +136,11 @@ const createEnvironment = async (req, res = response) => {
     }
 };
 
-
+/** Actualiza un ambiente existente en la base de datos.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de actualización es completada.
+ */
 const updateEnvironment = async (req, res = response) => {
     const environmentId = req.params.id;
     const environmentData = req.body;

@@ -24,10 +24,10 @@ app.use('/api/types-of-equipments', require('./routes/typeOfEquipmentRoutes'));
 app.use('/api/equipments', require('./routes/equipmentRoutes'));
 app.use('/api/types-of-environments', require('./routes/typeOfEnvironmentRoutes'));
 app.use('/api/environments', require('./routes/environmentsRoutes'));
-app.use('/api/types-of-boards', require('./routes/typesOfBoardsRoutes'));
-app.use('/api/boards', require('./routes/boardsRoutes'));
-app.use('/api/types-of-sensors', require('./routes/typesOfSensorRoutes'));
-app.use('/api/sensors', require('./routes/sensorsRoutes'));
+app.use('/api/types-of-boards', require('./routes/typeOfBoardRoutes'));
+app.use('/api/boards', require('./routes/boardRoutes'));
+app.use('/api/types-of-sensors', require('./routes/typeOfSensorRoutes'));
+app.use('/api/sensors', require('./routes/sensorRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
