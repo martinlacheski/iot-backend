@@ -18,13 +18,6 @@ const BoardSchema = Schema({
 });
 
 // Verificar si la placa ya existe
-BoardSchema.index({name: 1, environment: 1}, {unique: true});
-
-// Devolver id en vez de _id
-BoardSchema.method('toJSON', function () {
-    const {__v, _id, ...object} = this.toObject();
-    object.id = _id;
-    return object;
-});
+BoardSchema.index({name: 1, typeOfBoard: 1, environment: 1}, {unique: true});
 
 module.exports = model('Board', BoardSchema);

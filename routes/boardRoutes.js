@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getBoards, createBoard, updateBoard, deleteBoard } = require('../controllers/boardsController');
+const { getBoards, createBoard, updateBoard, deleteBoard } = require('../controllers/boardController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');

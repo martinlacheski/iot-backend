@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getSensors, createSensor, updateSensor, deleteSensor } = require('../controllers/sensorsController');
+const { getSensors, createSensor, updateSensor, deleteSensor } = require('../controllers/sensorController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');
