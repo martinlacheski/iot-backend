@@ -16,11 +16,4 @@ const UserSchema = Schema({
   },
 });
 
-// Devolver id en vez de _id
-UserSchema.method("toJSON", function () {
-  const { __v, _id, password, ...object } = this.toObject();
-  object.id = _id;
-  return object;
-});
-
 module.exports = model("User", UserSchema);

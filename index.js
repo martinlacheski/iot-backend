@@ -1,5 +1,6 @@
 const express = require('express');
 const { connectDatabase } = require('./database/config');
+const cors = require('cors');
 require('dotenv').config();
 
 console.log("Proyecto de servidor de NodeJS iniciado.")
@@ -9,6 +10,9 @@ const app = express();
 
 // Conexión a la base de datos
 connectDatabase();
+
+// CORS
+app.use(cors());
 
 // Middleware para lectura y parseo del body (JSON)
 app.use(express.json());
