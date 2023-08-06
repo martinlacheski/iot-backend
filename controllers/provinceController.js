@@ -13,7 +13,7 @@ const { Types } = require("mongoose");
  */
 const getProvinces = async (req, res = response) => {
   try {
-    const provinces = await Province.find();
+    const provinces = await Province.find().populate('country');
     res.json({
       ok: true,
       provinces,
@@ -59,7 +59,7 @@ const createProvince = async (req, res = response) => {
     if (provinceExists) {
       return res.status(400).json({
         ok: false,
-        msg: "La provincia ya existe en el país.",
+        msg: "¡La provincia ya existe en el país!",
       });
     }
 
@@ -74,7 +74,7 @@ const createProvince = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Provincia creada correctamente.",
+      msg: "¡Provincia creada correctamente!",
       province: provinceDB,
     });
   } catch (error) {
@@ -139,7 +139,7 @@ const updateProvince = async (req, res = response) => {
     if (provinceWithSameName) {
       return res.status(400).json({
         ok: false,
-        msg: "La provincia ya existe en el país.",
+        msg: "¡La provincia ya existe en el país!",
       });
     }
 
@@ -156,7 +156,7 @@ const updateProvince = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Provincia actualizada correctamente.",
+      msg: "¡Provincia actualizada correctamente!",
       province: provinceDB,
     });
   } catch (error) {
@@ -200,7 +200,7 @@ const deleteProvince = async (req, res = response) => {
     if (isReferencedInCity) {
       return res.status(400).json({
         ok: false,
-        msg: "La provincia está siendo referenciada en alguna ciudad.",
+        msg: "¡La provincia está siendo referenciada en alguna ciudad!",
       });
     }
 
@@ -209,7 +209,7 @@ const deleteProvince = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Provincia eliminada correctamente.",
+      msg: "¡Provincia eliminada correctamente!",
     });
   } catch (error) {
     console.log(error);
