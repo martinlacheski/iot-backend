@@ -36,7 +36,7 @@ const createCountry = async (req, res = response) => {
     const countryDB = await new Country(req.body).save();
     res.json({
       ok: true,
-      msg: "País creado exitosamente.",
+      msg: "¡País creado exitosamente!",
       country: countryDB,
     });
   } catch (error) {
@@ -85,7 +85,7 @@ const updateCountry = async (req, res = response) => {
       if (countryExists) {
         return res.status(400).json({
           ok: false,
-          msg: "El nombre del país al que intenta actualizar ya existe.",
+          msg: "¡El nombre del país al que intenta actualizar ya existe!",
         });
       }
     }
@@ -100,7 +100,7 @@ const updateCountry = async (req, res = response) => {
     // Devolvemos la respuesta
     res.json({
       ok: true,
-      msg: "País actualizado.",
+      msg: "¡País actualizado correctamente!",
       country: updatedCountry,
     });
   } catch (error) {
@@ -144,7 +144,7 @@ const deleteCountry = async (req, res = response) => {
     if (isReferencedInProvince) {
       return res.status(400).json({
         ok: false,
-        msg: "El país que intenta eliminar tiene provincias asociadas.",
+        msg: "¡El país que intenta eliminar tiene provincias asociadas!",
       });
     }
 
@@ -154,7 +154,7 @@ const deleteCountry = async (req, res = response) => {
     // Devolvemos la respuesta con el país eliminado (opcional)
     res.json({
       ok: true,
-      msg: "País eliminado: " + country.name,
+      msg: "¡País eliminado correctamente!",
     });
   } catch (error) {
     console.log(error);

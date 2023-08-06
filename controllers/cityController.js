@@ -13,7 +13,7 @@ const { Types } = require("mongoose");
  */
 const getCities = async (req, res = response) => {
   try {
-    const cities = await City.find();
+    const cities = await City.find().populate("province");
     res.json({
       ok: true,
       cities,
@@ -58,7 +58,7 @@ const createCity = async (req, res = response) => {
     if (cityExists) {
       return res.status(400).json({
         ok: false,
-        msg: "La ciudad ya existe en la provincia.",
+        msg: "¡La ciudad ya existe en la provincia!",
       });
     }
 
@@ -72,7 +72,7 @@ const createCity = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Ciudad creada correctamente.",
+      msg: "¡Ciudad creada correctamente!",
       city: cityDB,
     });
   } catch (error) {
@@ -138,7 +138,7 @@ const updateCity = async (req, res = response) => {
     if (cityWithSameName && cityWithSameName._id.toString() !== cityId) {
       return res.status(400).json({
         ok: false,
-        msg: "La ciudad ya existe en la provincia.",
+        msg: "¡La ciudad ya existe en la provincia!",
       });
     }
 
@@ -155,7 +155,7 @@ const updateCity = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Ciudad actualizada correctamente.",
+      msg: "¡Ciudad actualizada correctamente!",
       city: cityDB,
     });
   } catch (error) {
@@ -199,7 +199,7 @@ const deleteCity = async (req, res = response) => {
     if (organizationRef) {
       return res.status(400).json({
         ok: false,
-        msg: "La ciudad está siendo referenciada en la colección 'Organization'. No se puede eliminar.",
+        msg: "¡No es posible eliminar la ciudad porque está siendo referenciada en una organización!",
       });
     }
 
@@ -208,7 +208,7 @@ const deleteCity = async (req, res = response) => {
     if (branchRef) {
       return res.status(400).json({
         ok: false,
-        msg: "La ciudad está siendo referenciada en la colección 'Branch'. No se puede eliminar.",
+        msg: "¡No es posible eliminar la ciudad porque está siendo referenciada en una sede!",
       });
     }
 
@@ -217,7 +217,7 @@ const deleteCity = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Ciudad eliminada correctamente.",
+      msg: "¡Ciudad eliminada correctamente!",
     });
   } catch (error) {
     console.log(error);
