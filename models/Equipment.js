@@ -10,17 +10,9 @@ const EquipmentSchema = Schema({
         ref: "TypeOfEquipment",
         required: true,
     },
-    quantity: {
-        type: Number,
-        min: 1,
-        required: true,
-    },
-    observations: {
-        type: String,
-    },
 });
 
 // Verificar si el equipo ya existe
-EquipmentSchema.index({ description: 1, typeOfEquipment: 1, quantity: 1 }, { unique: true });
+EquipmentSchema.index({ description: 1, typeOfEquipment: 1 }, { unique: true });
 
 module.exports = model("Equipment", EquipmentSchema, "equipments");

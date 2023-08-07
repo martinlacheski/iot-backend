@@ -20,8 +20,6 @@ router.post(
         validateJWT,
         check('description', 'La descripción es obligatoria.').not().isEmpty(),
         check('typeOfEquipmentId', 'El id del tipo de equipo es obligatorio.').not().isEmpty(),
-        check('quantity', 'La cantidad es obligatoria.').not().isEmpty(),
-        check('quantity', 'La cantidad debe ser mayor a 0.').isInt({ min: 1 }),
         validateFields,
     ],
     createEquipment
@@ -34,8 +32,6 @@ router.put(
         validateJWT,
         check('description', 'La descripción es obligatoria.').not().isEmpty(),
         check('typeOfEquipmentId', 'El id del tipo de equipo es obligatorio.').not().isEmpty(),
-        check('quantity', 'La cantidad es obligatoria.').not().isEmpty(),
-        check('quantity', 'La cantidad debe ser mayor a 0.').isInt({ min: 1 }),
         validateFields,
     ],
     updateEquipment

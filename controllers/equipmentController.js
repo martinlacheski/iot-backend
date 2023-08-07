@@ -12,7 +12,7 @@ const { Types } = require("mongoose");
  */
 const getEquipments = async (req, res = response) => {
   try {
-    const equipments = await Equipment.find();
+    const equipments = await Equipment.find().populate("typeOfEquipment", "name");
     res.json({
       ok: true,
       equipments,
@@ -34,7 +34,7 @@ const getEquipments = async (req, res = response) => {
  */
 const createEquipment = async (req, res = response) => {
   try {
-    const { typeOfEquipmentId, description, quantity } = req.body;
+    const { typeOfEquipmentId, description } = req.body;
     // Verificar si el ID del tipo de equipo es válido
     if (!Types.ObjectId.isValid(typeOfEquipmentId)) {
       return res.status(400).json({
@@ -58,20 +58,11 @@ const createEquipment = async (req, res = response) => {
     const equipmentExists = await Equipment.findOne({
       description,
       typeOfEquipment: typeOfEquipmentId,
-      quantity,
     });
     if (equipmentExists) {
       return res.status(400).json({
         ok: false,
-        msg: "El equipo que intenta crear ya existe.",
-      });
-    }
-
-    // Cantidad debe ser mayor a 0
-    if (quantity < 1) {
-      return res.status(400).json({
-        ok: false,
-        msg: "La cantidad debe ser mayor a 0.",
+        msg: "¡El equipamiento que intenta crear ya existe!",
       });
     }
 
@@ -82,7 +73,7 @@ const createEquipment = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Equipo creado correctamente.",
+      msg: "¡Equipamiento creado correctamente!",
       equipment: equipmentDB,
     });
   } catch (error) {
@@ -135,20 +126,11 @@ const updateEquipment = async (req, res = response) => {
     equipmentExists = await Equipment.findOne({
       description: req.body.description,
       typeOfEquipment: req.body.typeOfEquipmentId,
-      quantity: req.body.quantity,
     });
     if (equipmentExists && equipmentExists.id != equipmentId) {
       return res.status(400).json({
         ok: false,
-        msg: "El equipo ya existe.",
-      });
-    }
-
-    // Quantity must be greater than 0
-    if (req.body.quantity < 1) {
-      return res.status(400).json({
-        ok: false,
-        msg: "La cantidad debe ser mayor a 0.",
+        msg: "¡El equipamiento que intenta actualizar ya existe!",
       });
     }
 
@@ -165,7 +147,7 @@ const updateEquipment = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Equipo actualizado correctamente.",
+      msg: "¡Equipamiento actualizado correctamente!",
       equipment: equipmentDB,
     });
   } catch (error) {
@@ -222,7 +204,7 @@ const deleteEquipment = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Equipo eliminado correctamente.",
+      msg: "¡Equipamiento eliminado correctamente!",
     });
   } catch (error) {
     console.log(error);
