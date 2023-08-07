@@ -37,14 +37,14 @@ const createTypeOfBoard = async (req, res = response) => {
     const typeOfBoardDB = await typeOfBoard.save();
     res.json({
       ok: true,
-      msg: "Tipo de placa creado correctamente.",
+      msg: "¡Tipo de placa creado correctamente!",
       typeOfBoard: typeOfBoardDB,
     });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
         ok: false,
-        msg: "El tipo de placa que intenta crear ya existe.",
+        msg: "¡El tipo de placa que intenta crear ya existe!",
       });
     }
     console.log(error);
@@ -90,7 +90,7 @@ const updateTypeOfBoard = async (req, res = response) => {
       if (typeOfBoardExists) {
         return res.status(400).json({
           ok: false,
-          msg: "El tipo de placa que intenta actualizar ya existe.",
+          msg: "¡El tipo de placa que intenta actualizar ya existe!",
         });
       }
     }
@@ -103,7 +103,7 @@ const updateTypeOfBoard = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Tipo de placa actualizado correctamente.",
+      msg: "¡Tipo de placa actualizado correctamente!",
       typeOfBoard: typeOfBoardUpdated,
     });
   } catch (error) {
@@ -147,8 +147,7 @@ const deleteTypeOfBoard = async (req, res = response) => {
     if (boards) {
       return res.status(400).json({
         ok: false,
-        msg:
-          "El tipo de placa que intenta eliminar está siendo utilizado por alguna placa.",
+        msg: "¡El tipo de placa que intenta eliminar está siendo utilizado por alguna placa!",
       });
     }
 
@@ -156,7 +155,7 @@ const deleteTypeOfBoard = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Tipo de placa eliminado correctamente.",
+      msg: "¡Tipo de placa eliminado correctamente!",
     });
   } catch (error) {
     console.log(error);

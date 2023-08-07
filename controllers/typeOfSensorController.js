@@ -37,7 +37,7 @@ const createTypeOfSensor = async (req, res = response) => {
         const typeOfSensorDB = await typeOfSensor.save();
         res.json({
             ok: true,
-            msg: 'Tipo de sensor creado correctamente.',
+            msg: '¡Tipo de sensor creado correctamente!',
             typeOfSensor: typeOfSensorDB
         });
 
@@ -45,7 +45,7 @@ const createTypeOfSensor = async (req, res = response) => {
         if (error.code === 11000) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El tipo de sensor que intenta crear ya existe.'
+                msg: '¡El tipo de sensor que intenta crear ya existe!'
             });
         }
         console.log(error);
@@ -91,17 +91,15 @@ const updateTypeOfSensor = async (req, res = response) => {
             if (typeOfSensorExists) {
                 return res.status(400).json({
                     ok: false,
-                    msg: 'El tipo de sensor que intenta actualizar ya existe.'
+                    msg: '¡El tipo de sensor que intenta actualizar ya existe!'
                 });
             }
         }
 
-
         const typeOfSensorUpdated = await TypeOfSensor.findByIdAndUpdate(typeOfSensorId, req.body, { new: true });
-
         res.json({
             ok: true,
-            msg: 'Tipo de sensor actualizado correctamente.',
+            msg: '¡Tipo de sensor actualizado correctamente!',
             typeOfSensor: typeOfSensorUpdated
         });
     } catch (error) {
@@ -145,7 +143,7 @@ const deleteTypeOfSensor = async (req, res = response) => {
         if (sensor) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El tipo de sensor está siendo utilizado por algún sensor.'
+                msg: '¡El tipo de sensor está siendo utilizado por algún sensor!'
             });
         }
 
@@ -153,7 +151,7 @@ const deleteTypeOfSensor = async (req, res = response) => {
 
         res.json({
             ok: true,
-            msg: 'Tipo de sensor eliminado correctamente.'
+            msg: '¡Tipo de sensor eliminado correctamente!'
         });
 
     } catch (error) {
