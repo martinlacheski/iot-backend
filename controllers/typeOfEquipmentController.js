@@ -37,14 +37,14 @@ const createTypeOfEquipment = async (req, res = response) => {
         const typeOfEquipmentDB = await typeOfEquipment.save();
         res.json({
             ok: true,
-            msg: 'Tipo de equipamiento creado correctamente.',
+            msg: '¡Tipo de equipamiento creado correctamente!',
             typeOfEquipment: typeOfEquipmentDB,
         });
     } catch (error) {
         if (error.code === 11000) {
             return res.status(400).json({
                 ok: false,
-                msg: 'El tipo de equipamiento que intenta crear ya existe.',
+                msg: '¡El tipo de equipamiento que intenta crear ya existe!',
             });
         }
         console.log(error);
