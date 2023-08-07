@@ -27,6 +27,28 @@ const getOrganizations = async (req, res = response) => {
 };
 
 /**
+ * OBTENER LA PRIMERA ORGANIZACIÓN
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Response} - La respuesta con un array de organizaciones o un mensaje de error en caso de fallo.
+ */
+const getOrganization = async (req, res = response) => {
+  try {
+    const organization = await Organization.findOne();
+    res.json({
+      ok: true,
+      organization,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor.",
+    });
+  }
+};
+
+/**
  * Crear una nueva organización.
  * @param {Request} req - La solicitud HTTP entrante.
  * @param {Response} res - La respuesta HTTP que se enviará al cliente.
@@ -162,7 +184,7 @@ const updateOrganization = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Organización actualizada correctamente.",
+      msg: "¡Organización actualizada correctamente!",
       organization: organizationUpdated,
     });
   } catch (error) {
@@ -226,6 +248,7 @@ const deleteOrganization = async (req, res = response) => {
 
 module.exports = {
   getOrganizations,
+  getOrganization,
   createOrganization,
   updateOrganization,
   deleteOrganization,
