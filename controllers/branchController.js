@@ -6,14 +6,14 @@ const Environment = require("../models/Environment");
 const { Types } = require("mongoose");
 
 /**
- * Obtener todas las sucursales.
+ * Obtener todas las sedees.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>} - La respuesta con un array de sucursales o un mensaje de error en caso de fallo.
+ * @returns {Promise<void>} - La respuesta con un array de sedees o un mensaje de error en caso de fallo.
  */
 const getBranches = async (req, res = response) => {
   try {
-    const branches = await Branch.find();
+    const branches = await Branch.find().populate("organization", "name").populate("city", "name");
     res.json({
       ok: true,
       branches,
@@ -28,10 +28,10 @@ const getBranches = async (req, res = response) => {
 };
 
 /**
- * Crear una nueva sucursal.
+ * Crear una nueva sede.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>} - La respuesta con la sucursal creada o un mensaje de error en caso de fallo.
+ * @returns {Promise<void>} - La respuesta con la sede creada o un mensaje de error en caso de fallo.
  */
 const createBranch = async (req, res = response) => {
   const { name, organizationId, cityId } = req.body;
@@ -49,7 +49,7 @@ const createBranch = async (req, res = response) => {
     if (!organizationExists) {
       return res.status(404).json({
         ok: false,
-        msg: "La organización que se quiere asignar la sucursal no existe.",
+        msg: "La organización que se quiere asignar la sede no existe.",
       });
     }
 
@@ -66,11 +66,11 @@ const createBranch = async (req, res = response) => {
     if (!cityExists) {
       return res.status(404).json({
         ok: false,
-        msg: "La ciudad que se quiere asignar la sucursal no existe.",
+        msg: "La ciudad que se quiere asignar la sede no existe.",
       });
     }
 
-    // Verificar si la sucursal ya existe en la ciudad y organización
+    // Verificar si la sede ya existe en la ciudad y organización
     let branchExists = await Branch.findOne({
       name,
       city: cityId,
@@ -79,7 +79,7 @@ const createBranch = async (req, res = response) => {
     if (branchExists) {
       return res.status(400).json({
         ok: false,
-        msg: "La sucursal ya existe en la ciudad y organización.",
+        msg: "¡La sede ya existe en la ciudad y organización!",
       });
     }
 
@@ -93,7 +93,7 @@ const createBranch = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Sucursal creada correctamente.",
+      msg: "¡Sede creada correctamente!",
       branch: branchDB,
     });
   } catch (error) {
@@ -106,10 +106,10 @@ const createBranch = async (req, res = response) => {
 };
 
 /**
- * Actualizar una sucursal.
+ * Actualizar una sede.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
- * @returns {Promise<void>} - La respuesta con la sucursal actualizada o un mensaje de error en caso de fallo.
+ * @returns {Promise<void>} - La respuesta con la sede actualizada o un mensaje de error en caso de fallo.
  */
 const updateBranch = async (req, res = response) => {
   const branchId = req.params.id;
@@ -117,20 +117,20 @@ const updateBranch = async (req, res = response) => {
 
   try {
 
-    // Verificar si el ID de la sucursal es válido
+    // Verificar si el ID de la sede es válido
     if (!Types.ObjectId.isValid(branchId)) {
       return res.status(400).json({
         ok: false,
-        msg: "ID de sucursal inválido.",
+        msg: "ID de sede inválido.",
       });
     }
 
-    // Verificar si la sucursal existe
+    // Verificar si la sede existe
     let branchExists = await Branch.findById(branchId);
     if (!branchExists) {
       return res.status(404).json({
         ok: false,
-        msg: "La sucursal que se quiere actualizar no existe.",
+        msg: "La sede que se quiere actualizar no existe.",
       });
     }
 
@@ -168,7 +168,7 @@ const updateBranch = async (req, res = response) => {
       });
     }
 
-    // Verificar si la sucursal ya existe en la ciudad y organización
+    // Verificar si la sede ya existe en la ciudad y organización
     branchExists = await Branch.findOne({
       name,
       city: cityId,
@@ -178,7 +178,7 @@ const updateBranch = async (req, res = response) => {
     if (branchExists) {
       return res.status(400).json({
         ok: false,
-        msg: "La sucursal ya existe en la ciudad y organización.",
+        msg: "¡La sede ya existe en la ciudad y organización!",
       });
     }
 
@@ -196,7 +196,7 @@ const updateBranch = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Sucursal actualizada correctamente.",
+      msg: "¡Sede actualizada correctamente!",
       branch: branchDB,
     });
   } catch (error) {
@@ -209,7 +209,7 @@ const updateBranch = async (req, res = response) => {
 };
 
 /**
- * Eliminar una sucursal.
+ * Eliminar una sede.
  * @param {*} req - Objeto de solicitud.
  * @param {*} res - Objeto de respuesta.
  * @returns {Promise<void>} - La respuesta con un mensaje de éxito o un mensaje de error en caso de fallo.
@@ -219,29 +219,29 @@ const deleteBranch = async (req, res = response) => {
 
   try {
 
-    // Verificar si el ID de la sucursal es válido
+    // Verificar si el ID de la sede es válido
     if (!Types.ObjectId.isValid(branchId)) {
       return res.status(400).json({
         ok: false,
-        msg: "ID de sucursal inválido.",
+        msg: "ID de sede inválido.",
       });
     }
 
-    // Verificar si la sucursal existe
+    // Verificar si la sede existe
     const branchExists = await Branch.findById(branchId);
     if (!branchExists) {
       return res.status(404).json({
         ok: false,
-        msg: "La sucursal que se quiere eliminar no existe.",
+        msg: "La sede que se quiere eliminar no existe.",
       });
     }
 
-    // Verificar si la sucursal está siendo referenciada en la colección "Environment"
+    // Verificar si la sede está siendo referenciada en la colección "Environment"
     const branchReferenced = await Environment.exists({ branch: branchId });
     if (branchReferenced) {
       return res.status(400).json({
         ok: false,
-        msg: "La sucursal está siendo referenciada en algún ambiente.",
+        msg: "¡La sede está siendo referenciada en algún ambiente!",
       });
     }
 
@@ -249,7 +249,7 @@ const deleteBranch = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Sucursal eliminada correctamente.",
+      msg: "¡Sede eliminada correctamente!",
     });
   } catch (error) {
     console.log(error);

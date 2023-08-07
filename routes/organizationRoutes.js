@@ -5,6 +5,7 @@
 const { Router } = require("express");
 const {
   getOrganizations,
+  getOrganization,
   createOrganization,
   updateOrganization,
   deleteOrganization,
@@ -16,7 +17,10 @@ const { check } = require("express-validator");
 const router = Router();
 
 // GET ORGANIZATIONS
-router.get("/", validateJWT, getOrganizations);
+// router.get("/", validateJWT, getOrganizations);
+
+// GET FIRST ORGANIZATION
+router.get("/", validateJWT, getOrganization);
 
 // CREATE ORGANIZATION
 router.post(
