@@ -4,10 +4,11 @@ const TypeOfBoardSchema = Schema({
   name: {
     type: String,
     required: true,
+    unique: true,
   },
   specs: {
-    type: Map,
-    of: String,
+    type: String,
+    required: true,
   },
 });
 

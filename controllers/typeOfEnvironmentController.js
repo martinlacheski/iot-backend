@@ -1,5 +1,6 @@
 const { response } = require("express");
 const TypeOfEnvironment = require("../models/TypeOfEnvironment");
+const Environment = require("../models/Environment");
 const { Types } = require("mongoose");
 
 /**
@@ -36,14 +37,14 @@ const createTypeOfEnvironment = async (req, res = response) => {
     const typeOfEnvironmentDB = await typeOfEnvironment.save();
     res.json({
       ok: true,
-      msg: "Tipo de ambiente creado correctamente.",
+      msg: "¡Tipo de ambiente creado correctamente!",
       typeOfEnvironment: typeOfEnvironmentDB,
     });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({
         ok: false,
-        msg: "El tipo de ambiente que intenta crear ya existe.",
+        msg: "¡El tipo de ambiente que intenta crear ya existe!",
       });
     }
     console.log(error);
@@ -90,7 +91,7 @@ const updateTypeOfEnvironment = async (req, res = response) => {
       if (typeOfEnvironmentExists) {
         return res.status(400).json({
           ok: false,
-          msg: "El tipo de ambiente que intenta actualizar ya existe.",
+          msg: "¡El tipo de ambiente que intenta actualizar ya existe!",
         });
       }
     }
@@ -103,7 +104,7 @@ const updateTypeOfEnvironment = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Tipo de ambiente actualizado correctamente.",
+      msg: "¡Tipo de ambiente actualizado correctamente!",
       typeOfEnvironment: typeOfEnvironmentUpdated,
     });
   } catch (error) {
@@ -142,11 +143,20 @@ const deleteTypeOfEnvironment = async (req, res = response) => {
       });
     }
 
+    // Verificar si el tipo de ambiente está siendo utilizado
+    const environments = await Environment.find({ typeOfEnvironment: typeOfEnvironmentId });
+    if (environments.length > 0) {
+      return res.status(400).json({
+        ok: false,
+        msg: "¡El tipo de ambiente que intenta eliminar está siendo utilizado!",
+      });
+    }
+
     await TypeOfEnvironment.findByIdAndDelete(typeOfEnvironmentId);
 
     res.json({
       ok: true,
-      msg: "Tipo de ambiente eliminado correctamente.",
+      msg: "¡Tipo de ambiente eliminado correctamente!",
     });
   } catch (error) {
     console.log(error);
