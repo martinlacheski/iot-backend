@@ -29,8 +29,15 @@ const EnvironmentSchema = Schema({
     },
     // List of equipments
     equipments: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Equipment',
+        equipment: {
+            type: Schema.Types.ObjectId,
+            ref: 'Equipment',
+            required: true,
+        },
+        quantity: {
+            type: Number,
+            default: 1, // You can set a default value for quantity if needed
+        },
     }],
     observations: {
         type: String,
