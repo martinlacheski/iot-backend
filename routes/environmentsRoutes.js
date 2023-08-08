@@ -3,7 +3,7 @@
 */
 
 const { Router } = require('express');
-const { getEnvironments, createEnvironment, updateEnvironment, deleteEnvironment } = require('../controllers/environmentController');
+const { getEnvironments, getEnvironmentById, createEnvironment, updateEnvironment, deleteEnvironment } = require('../controllers/environmentController');
 const { validateJWT } = require('../middlewares/validateJWT');
 const { validateFields } = require('../middlewares/validateFields');
 const { check } = require('express-validator');
@@ -12,6 +12,9 @@ const router = Router();
 
 // GET ENVIRONMENTS
 router.get('/', validateJWT, getEnvironments);
+
+// GET ENVIRONMENT BY ID
+router.get('/:id', validateJWT, getEnvironmentById);
 
 // CREATE ENVIRONMENT
 router.post(

@@ -36,6 +36,47 @@ const getEnvironments = async (req, res = response) => {
 };
 
 /**
+ * Obtiene un ambiente de la base de datos por su ID.
+ * @param {Request} req - La solicitud HTTP entrante.
+ * @param {Response} res - La respuesta HTTP que se enviará al cliente.
+ * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de búsqueda es completada.
+ */
+const getEnvironmentById = async (req, res = response) => {
+  const environmentId = req.params.id;
+
+  try {
+    // Verificar si el ID del ambiente es válido
+    if (!Types.ObjectId.isValid(environmentId)) {
+      return res.status(400).json({
+        ok: false,
+        msg: "ID de ambiente inválido.",
+      });
+    }
+
+    const environment = await Environment.findOne({ _id: environmentId });
+    
+    if (!environment) {
+      return res.status(404).json({
+        ok: false,
+        msg: "El ambiente no existe.",
+      });
+    } else {
+      res.json({
+        ok: true,
+        environment,
+      });
+    }
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor.",
+    });
+  }
+};
+
+/**
  * Crea un nuevo ambiente en la base de datos.
  * @param {Request} req - La solicitud HTTP entrante.
  * @param {Response} res - La respuesta HTTP que se enviará al cliente.
@@ -211,12 +252,12 @@ const updateEnvironment = async (req, res = response) => {
     }
 
     // Verificar si los equipos existen
-    const equipmentIds = environmentData.equipments || [];
-    if (equipmentIds.length > 0) {
-      const equipmentExists = await Equipment.find({
-        _id: { $in: equipmentIds },
-      });
-      if (equipmentExists.length !== equipmentIds.length) {
+    const equipments = environmentData.equipments || [];
+    const ids = equipments.map((equipment) => equipment.equipment);
+
+    if (ids.length > 0) {
+      const equipmentExists = await Equipment.find({ _id: { $in: ids } });
+      if (equipmentExists.length !== ids.length) {
         return res.status(404).json({
           ok: false,
           msg: "Equipamiento no encontrado.",
@@ -292,6 +333,7 @@ const deleteEnvironment = async (req, res = response) => {
 
 module.exports = {
   getEnvironments,
+  getEnvironmentById,
   createEnvironment,
   updateEnvironment,
   deleteEnvironment,
