@@ -12,7 +12,9 @@ const { Types } = require("mongoose");
  */
 const getBoards = async (req, res = response) => {
   try {
-    const boards = await Board.find();
+    const boards = await Board.find()
+      .populate("typeOfBoard", "name")
+      .populate("environment", "name");
     res.json({
       ok: true,
       boards,
@@ -35,7 +37,6 @@ const getBoards = async (req, res = response) => {
 const createBoard = async (req, res = response) => {
   const { name, typeOfBoardId, environmentId } = req.body;
   try {
-    
     // Verificar si el ID del tipo de placa es válido
     if (!Types.ObjectId.isValid(typeOfBoardId)) {
       return res.status(400).json({
@@ -79,7 +80,7 @@ const createBoard = async (req, res = response) => {
     if (boardExists) {
       return res.status(400).json({
         ok: false,
-        msg: "La placa ya existe en el ambiente.",
+        msg: "¡La placa ya existe en el ambiente!",
       });
     }
 
@@ -92,11 +93,17 @@ const createBoard = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Placa creada con éxito.",
+      msg: "¡Placa creada correctamente!",
       board: boardDB,
     });
   } catch (error) {
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        ok: false,
+        msg: "¡El nombre de la placa ya existe! Por favor, ingrese otro nombre.",
+      });
+    }
     res.status(500).json({
       ok: false,
       msg: "Error interno del servidor.",
@@ -170,12 +177,12 @@ const updateBoard = async (req, res = response) => {
     boardExists = await Board.findOne({
       name,
       environment: environmentId,
-      typeOfBoard: typeOfBoardId
+      typeOfBoard: typeOfBoardId,
     });
     if (boardExists && boardExists.id != boardId) {
       return res.status(400).json({
         ok: false,
-        msg: "La placa ya existe en el ambiente.",
+        msg: "¡La placa ya existe en el ambiente!",
       });
     }
 
@@ -192,11 +199,17 @@ const updateBoard = async (req, res = response) => {
 
     res.json({
       ok: true,
-      msg: "Placa actualizada con éxito.",
+      msg: "¡Placa actualizada correctamente!",
       board: boardBD,
     });
   } catch (error) {
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(400).json({
+        ok: false,
+        msg: "¡El nombre de la placa ya existe! Por favor, ingrese otro nombre.",
+      });
+    }
     res.status(500).json({
       ok: false,
       msg: "Error interno del servidor.",
