@@ -4,6 +4,7 @@ const BoardSchema = Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     typeOfBoard: {
         type: Schema.Types.ObjectId,

@@ -4,6 +4,7 @@ const SensorSchema = Schema({
     name: {
         type: String,
         required: true,
+        unique: true,
     },
     typeOfSensor: {
         type: Schema.Types.ObjectId,
