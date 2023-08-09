@@ -33,6 +33,11 @@ const getSensors = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createSensor = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const { name, typeOfSensorId, boardId } = req.body;
 
   try {
@@ -110,6 +115,11 @@ const createSensor = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de actualización es completada.
  */
 const updateSensor = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const sensorId = req.params.id;
   const { name, typeOfSensorId, boardId } = req.body;
 
@@ -230,7 +240,7 @@ const deleteSensor = async (req, res = response) => {
     }
 
     // Eliminar sensor
-    await Sensor.findByIdAndDelete(sensorId);
+    await Sensor.updateOne({ _id: sensorId }, { isDeleted: true });
 
     res.json({
       ok: true,

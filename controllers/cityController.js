@@ -34,6 +34,11 @@ const getCities = async (req, res = response) => {
  * @returns {Promise<void>} - La respuesta con la ciudad creada o un mensaje de error en caso de fallo.
  */
 const createCity = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const { provinceId, name } = req.body;
   try {
     // Verificar si el ID de la provincia es válido
@@ -92,7 +97,13 @@ const createCity = async (req, res = response) => {
  */
 const updateCity = async (req, res = response) => {
   const cityId = req.params.id;
-  const { provinceId, name } = req.body;
+  const { provinceId } = req.body;
+
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
 
   try {
     // Verificar si el ID de la ciudad es válido
@@ -213,7 +224,7 @@ const deleteCity = async (req, res = response) => {
     }
 
     // Eliminar la ciudad
-    await City.findByIdAndDelete(cityId);
+    await City.updateOne({ _id: cityId }, { isDeleted: true });
 
     res.json({
       ok: true,

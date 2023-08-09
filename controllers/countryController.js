@@ -32,6 +32,11 @@ const getCountries = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createCountry = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   try {
     const countryDB = await new Country(req.body).save();
     res.json({
@@ -62,6 +67,11 @@ const createCountry = async (req, res = response) => {
  */
 const updateCountry = async (req, res = response) => {
   const countryId = req.params.id;
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   try {
     if (!Types.ObjectId.isValid(countryId)) {
       return res.status(400).json({
@@ -140,7 +150,9 @@ const deleteCountry = async (req, res = response) => {
     }
 
     // Verificar si el país tiene provincias asociadas (Middleware sugerido)
-    const isReferencedInProvince = await Province.exists({ country: countryId });
+    const isReferencedInProvince = await Province.exists({
+      country: countryId,
+    });
     if (isReferencedInProvince) {
       return res.status(400).json({
         ok: false,
@@ -149,7 +161,7 @@ const deleteCountry = async (req, res = response) => {
     }
 
     // Eliminamos el país
-    await Country.findByIdAndDelete(countryId);
+    await Country.updateOne({ _id: countryId }, { isDeleted: true });
 
     // Devolvemos la respuesta con el país eliminado (opcional)
     res.json({

@@ -34,6 +34,12 @@ const getBranches = async (req, res = response) => {
  * @returns {Promise<void>} - La respuesta con la sede creada o un mensaje de error en caso de fallo.
  */
 const createBranch = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
+
   const { name, organizationId, cityId } = req.body;
   try {
     // Verificar si el ID de la organización es válido
@@ -114,6 +120,11 @@ const createBranch = async (req, res = response) => {
 const updateBranch = async (req, res = response) => {
   const branchId = req.params.id;
   const { organizationId, cityId, name } = req.body;
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
 
   try {
 
@@ -245,7 +256,7 @@ const deleteBranch = async (req, res = response) => {
       });
     }
 
-    await Branch.findByIdAndDelete(branchId);
+    await Branch.updateOne({ _id: branchId }, { isDeleted: true });
 
     res.json({
       ok: true,

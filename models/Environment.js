@@ -42,6 +42,35 @@ const EnvironmentSchema = Schema({
     observations: {
         type: String,
     },
+    isDeleted : {
+        type: Boolean,
+        default: false,
+    },
+}, { timestamps: true });
+
+EnvironmentSchema.pre('find', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+EnvironmentSchema.pre('findOne', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+EnvironmentSchema.pre('findById', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+EnvironmentSchema.pre('findOneAndUpdate', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+EnvironmentSchema.pre('findByIdAndUpdate', function (next) {
+    this.where({ isDeleted: false });
+    next();
 });
 
 // Verificar si el ambiente ya existe en la sucursal y tipo de ambiente

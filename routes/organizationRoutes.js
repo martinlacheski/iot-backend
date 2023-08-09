@@ -23,17 +23,17 @@ const router = Router();
 router.get("/", validateJWT, getOrganization);
 
 // CREATE ORGANIZATION
-router.post(
-  "/",
-  [
-    validateJWT,
-    check("name", "El nombre es obligatorio.").not().isEmpty(),
-    check("address", "La dirección es obligatoria.").not().isEmpty(),
-    check("cityId", "El id de la ciudad es obligatorio.").not().isEmpty(),
-    validateFields,
-  ],
-  createOrganization
-);
+// router.post(
+//   "/",
+//   [
+//     validateJWT,
+//     check("name", "El nombre es obligatorio.").not().isEmpty(),
+//     check("address", "La dirección es obligatoria.").not().isEmpty(),
+//     check("cityId", "El id de la ciudad es obligatorio.").not().isEmpty(),
+//     validateFields,
+//   ],
+//   createOrganization
+// );
 
 // UPDATE ORGANIZATION
 router.put(
@@ -49,6 +49,6 @@ router.put(
 );
 
 // DELETE ORGANIZATION
-router.delete("/:id", validateJWT, deleteOrganization);
+// router.delete("/:id", validateJWT, deleteOrganization);
 
 module.exports = router;

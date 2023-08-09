@@ -84,6 +84,12 @@ const getEnvironmentById = async (req, res = response) => {
  * @throws {Error} Si algún error ocurre durante la creación del ambiente.
  */
 const createEnvironment = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
+
   const { name, typeOfEnvironmentId, branchId } = req.body;
   try {
     // Verificar si el ID del tipo de ambiente es válido
@@ -196,6 +202,12 @@ const createEnvironment = async (req, res = response) => {
 const updateEnvironment = async (req, res = response) => {
   const environmentId = req.params.id;
   const environmentData = req.body;
+
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
 
   try {
     // Verificar si el ID del ambiente es válido
@@ -316,7 +328,7 @@ const deleteEnvironment = async (req, res = response) => {
       });
     }
 
-    await Environment.findByIdAndDelete(environmentId);
+    await Environment.updateOne({ _id: environmentId }, { isDeleted: true });
 
     res.json({
       ok: true,

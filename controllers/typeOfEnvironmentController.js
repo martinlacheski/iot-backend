@@ -32,6 +32,11 @@ const getTypesOfEnvironments = async (req, res = response) => {
  * @returns  {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createTypeOfEnvironment = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const typeOfEnvironment = new TypeOfEnvironment(req.body);
   try {
     const typeOfEnvironmentDB = await typeOfEnvironment.save();
@@ -63,13 +68,18 @@ const createTypeOfEnvironment = async (req, res = response) => {
  */
 const updateTypeOfEnvironment = async (req, res = response) => {
   const typeOfEnvironmentId = req.params.id;
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   try {
     // Verificar si el ID es válido
     if (!Types.ObjectId.isValid(typeOfEnvironmentId)) {
-        return res.status(404).json({
-            ok: false,
-            msg: 'ID del tipo de ambiente inválido.',
-        });
+      return res.status(404).json({
+        ok: false,
+        msg: "ID del tipo de ambiente inválido.",
+      });
     }
 
     // Verificar si el tipo de ambiente existe
@@ -97,9 +107,9 @@ const updateTypeOfEnvironment = async (req, res = response) => {
     }
 
     const typeOfEnvironmentUpdated = await TypeOfEnvironment.findByIdAndUpdate(
-        typeOfEnvironmentId,
-        req.body,
-        {new: true}
+      typeOfEnvironmentId,
+      req.body,
+      { new: true }
     );
 
     res.json({
@@ -128,14 +138,16 @@ const deleteTypeOfEnvironment = async (req, res = response) => {
   try {
     // Verificar si el ID es válido
     if (!Types.ObjectId.isValid(typeOfEnvironmentId)) {
-        return res.status(404).json({
-            ok: false,
-            msg: 'ID del tipo de ambiente inválido.',
-        });
+      return res.status(404).json({
+        ok: false,
+        msg: "ID del tipo de ambiente inválido.",
+      });
     }
 
     // Verificar si el tipo de ambiente existe
-    const typeOfEnvironment = await TypeOfEnvironment.findById(typeOfEnvironmentId);
+    const typeOfEnvironment = await TypeOfEnvironment.findById(
+      typeOfEnvironmentId
+    );
     if (!typeOfEnvironment) {
       return res.status(404).json({
         ok: false,
@@ -144,7 +156,9 @@ const deleteTypeOfEnvironment = async (req, res = response) => {
     }
 
     // Verificar si el tipo de ambiente está siendo utilizado
-    const environments = await Environment.find({ typeOfEnvironment: typeOfEnvironmentId });
+    const environments = await Environment.find({
+      typeOfEnvironment: typeOfEnvironmentId,
+    });
     if (environments.length > 0) {
       return res.status(400).json({
         ok: false,
@@ -152,7 +166,10 @@ const deleteTypeOfEnvironment = async (req, res = response) => {
       });
     }
 
-    await TypeOfEnvironment.findByIdAndDelete(typeOfEnvironmentId);
+    await TypeOfEnvironment.updateOne(
+      { _id: typeOfEnvironmentId },
+      { isDeleted: true }
+    );
 
     res.json({
       ok: true,

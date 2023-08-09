@@ -12,7 +12,10 @@ const { Types } = require("mongoose");
  */
 const getEquipments = async (req, res = response) => {
   try {
-    const equipments = await Equipment.find().populate("typeOfEquipment", "name");
+    const equipments = await Equipment.find().populate(
+      "typeOfEquipment",
+      "name"
+    );
     res.json({
       ok: true,
       equipments,
@@ -33,6 +36,11 @@ const getEquipments = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createEquipment = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   try {
     const { typeOfEquipmentId, description } = req.body;
     // Verificar si el ID del tipo de equipo es válido
@@ -92,6 +100,11 @@ const createEquipment = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de actualización es completada.
  */
 const updateEquipment = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const equipmentId = req.params.id;
   try {
     // Verificar si el ID del equipo es válido
@@ -185,22 +198,18 @@ const deleteEquipment = async (req, res = response) => {
       });
     }
 
-    // TODO: Verificar si el equipo está en el objeto de equipamientos de algun Environment
-    const environments = await Environment.find();
-    for (const environment of environments) {
-      for (const equipment of environment.equipments) {
-        if (equipment == equipmentId) {
-          return res.status(400).json({
-            ok: false,
-            msg:
-              "El equipo que intenta eliminar está asignado a un ambiente. Elimine el equipo del ambiente y vuelva a intentarlo.",
-          });
-        }
-      }
+    const usingEquipment = await Environment.findOne({
+      "equipments.equipment": equipmentId,
+    });
+    if (usingEquipment) {
+      return res.status(400).json({
+        ok: false,
+        msg: "¡El equipamiento está siendo utilizado por algún ambiente!",
+      });
     }
 
     // Eliminar equipo
-    await Equipment.findByIdAndDelete(equipmentId);
+    await Equipment.updateOne({ _id: equipmentId }, { isDeleted: true });
 
     res.json({
       ok: true,

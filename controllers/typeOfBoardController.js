@@ -32,6 +32,11 @@ const getTypesOfBoards = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createTypeOfBoard = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const typeOfBoard = new TypeOfBoard(req.body);
   try {
     const typeOfBoardDB = await typeOfBoard.save();
@@ -63,6 +68,11 @@ const createTypeOfBoard = async (req, res = response) => {
  */
 const updateTypeOfBoard = async (req, res = response) => {
   const typeOfBoardId = req.params.id;
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
 
   try {
     // Verificar si el ID del tipo de placa es válido
@@ -151,7 +161,7 @@ const deleteTypeOfBoard = async (req, res = response) => {
       });
     }
 
-    await TypeOfBoard.findByIdAndDelete(typeOfBoardId);
+    await TypeOfBoard.updateOne({ _id: typeOfBoardId }, { isDeleted: true });
 
     res.json({
       ok: true,

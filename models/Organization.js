@@ -31,7 +31,7 @@ const OrganizationSchema = Schema({
         type: String,
         default: "default.png",
     },
-});
+}, { timestamps: true });
 
 // Verificar si la organización ya existe en la ciudad
 OrganizationSchema.index({ name: 1, city: 1 }, { unique: true });

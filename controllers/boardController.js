@@ -35,6 +35,11 @@ const getBoards = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de creación es completada.
  */
 const createBoard = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const { name, typeOfBoardId, environmentId } = req.body;
   try {
     // Verificar si el ID del tipo de placa es válido
@@ -118,6 +123,11 @@ const createBoard = async (req, res = response) => {
  * @returns {Promise<void>} Una promesa que se resuelve cuando la operación de actualización es completada.
  */
 const updateBoard = async (req, res = response) => {
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
   const boardId = req.params.id;
   const { name, typeOfBoardId, environmentId } = req.body;
 
@@ -249,16 +259,17 @@ const deleteBoard = async (req, res = response) => {
     if (sensors) {
       return res.status(400).json({
         ok: false,
-        msg: "La placa está siendo utilizada por algún sensor.",
+        msg: "¡La placa está siendo utilizada por algún sensor!",
       });
     }
 
     // Eliminar placa
-    await Board.findByIdAndDelete(boardId);
+    await Board.updateOne({ _id: boardId }, { isDeleted: true });
+    // await Board.findByIdAndDelete(boardId);
 
     res.json({
       ok: true,
-      msg: "Placa eliminada con éxito.",
+      msg: "¡Placa eliminada con éxito!",
     });
   } catch (error) {
     console.log(error);

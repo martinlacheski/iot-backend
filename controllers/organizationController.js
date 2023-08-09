@@ -123,6 +123,12 @@ const updateOrganization = async (req, res = response) => {
   const organizationId = req.params.id;
   const { cityId } = req.body;
 
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
+
   try {
     // Verificar si el ID de la organización es válido
     if (!Types.ObjectId.isValid(organizationId)) {

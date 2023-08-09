@@ -35,6 +35,11 @@ const getProvinces = async (req, res = response) => {
  */
 const createProvince = async (req, res = response) => {
   try {
+    for (const key in req.body) {
+      if (typeof req.body[key] === "string") {
+        req.body[key] = req.body[key].trim().toUpperCase();
+      }
+    }
     const { countryId, name } = req.body;
 
     // Verificar si el ID del país es válido
@@ -94,6 +99,12 @@ const createProvince = async (req, res = response) => {
  */
 const updateProvince = async (req, res = response) => {
   const provinceId = req.params.id;
+  
+  for (const key in req.body) {
+    if (typeof req.body[key] === "string") {
+      req.body[key] = req.body[key].trim().toUpperCase();
+    }
+  }
 
   try {
     // Verificar si el ID de la provincia es válido
@@ -205,7 +216,7 @@ const deleteProvince = async (req, res = response) => {
     }
 
     // Eliminar la provincia
-    await Province.findByIdAndDelete(provinceId);
+    await Province.updateOne({ _id: provinceId }, { isDeleted: true });
 
     res.json({
       ok: true,

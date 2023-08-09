@@ -16,6 +16,35 @@ const SensorSchema = Schema({
         ref: 'Board',
         required: true,
     },
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
+}, { timestamps: true });
+
+SensorSchema.pre('find', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+SensorSchema.pre('findOne', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+SensorSchema.pre('findById', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+SensorSchema.pre('findOneAndUpdate', function (next) {
+    this.where({ isDeleted: false });
+    next();
+});
+
+SensorSchema.pre('findByIdAndUpdate', function (next) {
+    this.where({ isDeleted: false });
+    next();
 });
 
 // Verificar si el sensor ya existe
