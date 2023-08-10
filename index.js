@@ -18,21 +18,24 @@ app.use(cors());
 app.use(express.json());
 
 // Rutas
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/countries', require('./routes/countryRoutes'));
-app.use('/api/provinces', require('./routes/provinceRoutes'));
-app.use('/api/cities', require('./routes/cityRoutes'));
-app.use('/api/organization', require('./routes/organizationRoutes'));
-app.use('/api/branches', require('./routes/branchRoutes'));
-app.use('/api/types-of-equipments', require('./routes/typeOfEquipmentRoutes'));
-app.use('/api/equipments', require('./routes/equipmentRoutes'));
-app.use('/api/types-of-environments', require('./routes/typeOfEnvironmentRoutes'));
-app.use('/api/environments', require('./routes/environmentsRoutes'));
-app.use('/api/types-of-boards', require('./routes/typeOfBoardRoutes'));
-app.use('/api/boards', require('./routes/boardRoutes'));
-app.use('/api/types-of-sensors', require('./routes/typeOfSensorRoutes'));
-app.use('/api/sensors', require('./routes/sensorRoutes'));
-app.use('/api/test', require('./routes/testRoutes'));
+app.use('/api/auth', require('./routes/admin/authRoutes'));
+app.use('/api/countries', require('./routes/admin/countryRoutes'));
+app.use('/api/provinces', require('./routes/admin/provinceRoutes'));
+app.use('/api/cities', require('./routes/admin/cityRoutes'));
+app.use('/api/organization', require('./routes/admin/organizationRoutes'));
+app.use('/api/branches', require('./routes/admin/branchRoutes'));
+app.use('/api/types-of-equipments', require('./routes/admin/typeOfEquipmentRoutes'));
+app.use('/api/equipments', require('./routes/admin/equipmentRoutes'));
+app.use('/api/types-of-environments', require('./routes/admin/typeOfEnvironmentRoutes'));
+app.use('/api/environments', require('./routes/admin/environmentsRoutes'));
+app.use('/api/types-of-boards', require('./routes/admin/typeOfBoardRoutes'));
+app.use('/api/boards', require('./routes/admin/boardRoutes'));
+app.use('/api/types-of-sensors', require('./routes/admin/typeOfSensorRoutes'));
+app.use('/api/sensors', require('./routes/admin/sensorRoutes'));
+
+app.use('/api/data-consumption-ac', require('./routes/data/dataConsumptionACRoutes'));
+app.use('/api/data-consumption-devices', require('./routes/data/dataConsumptionDevicesRoutes'));
+app.use('/api/data-consumption-lighting', require('./routes/data/dataConsumptionLightingRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
