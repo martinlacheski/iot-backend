@@ -27,6 +27,65 @@ const getSensors = async (req, res = response) => {
   }
 };
 
+const getFullData = async (req, res = response) => {
+  try {
+    const sensorData = await Sensor.aggregate([
+      {
+        $lookup: {
+          from: "boards", // Nombre de la colección de placas (boards)
+          localField: "board",
+          foreignField: "_id",
+          as: "boardInfo"
+        }
+      },
+      {
+        $unwind: "$boardInfo"
+      },
+      {
+        $lookup: {
+          from: "environments", // Nombre de la colección de ambientes (environments)
+          localField: "boardInfo.environment",
+          foreignField: "_id",
+          as: "environmentInfo"
+        }
+      },
+      {
+        $unwind: "$environmentInfo"
+      },
+      {
+        $project: {
+          _id: 1,
+          name: 1,
+          typeOfSensor: 1,
+          boardInfo: {
+            _id: "$boardInfo._id",
+            name: "$boardInfo.name",
+            typeOfBoard: "$boardInfo.typeOfBoard",
+            environmentInfo: {
+              _id: "$environmentInfo._id",
+              name: "$environmentInfo.name",
+              typeOfEnvironment: "$environmentInfo.typeOfEnvironment"
+              // Otros campos del ambiente si es necesario
+            }
+          }
+        }
+      }
+    ]);
+
+    res.json({
+      ok: true,
+      sensors: sensorData,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      ok: false,
+      msg: "Error interno del servidor.",
+    });
+  }
+};
+
+
 /** Crea un nuevo sensor y lo guarda en la base de datos.
  * @param {Request} req - La solicitud HTTP entrante.
  * @param {Response} res - La respuesta HTTP que se enviará al cliente.
@@ -257,6 +316,7 @@ const deleteSensor = async (req, res = response) => {
 
 module.exports = {
   getSensors,
+  getFullData,
   createSensor,
   updateSensor,
   deleteSensor,

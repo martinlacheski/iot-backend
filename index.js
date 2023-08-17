@@ -37,6 +37,9 @@ app.use('/api/data-consumption-ac', require('./routes/data/dataConsumptionACRout
 app.use('/api/data-consumption-devices', require('./routes/data/dataConsumptionDevicesRoutes'));
 app.use('/api/data-consumption-lighting', require('./routes/data/dataConsumptionLightingRoutes'));
 
+// REPORTS
+app.use('/api/reports/energy-consumption', require('./routes/reports/energyConsumptionRoutes'));
+
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${process.env.PORT}`);

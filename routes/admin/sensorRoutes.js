@@ -3,7 +3,7 @@
  */
 
 const { Router } = require('express');
-const { getSensors, createSensor, updateSensor, deleteSensor } = require('../../controllers/admin/sensorController');
+const { getSensors, createSensor, updateSensor, deleteSensor, getFullData } = require('../../controllers/admin/sensorController');
 const { validateJWT } = require('../../middlewares/validateJWT');
 const { validateFields } = require('../../middlewares/validateFields');
 const { check } = require('express-validator');
@@ -12,6 +12,8 @@ const router = Router();
 
 // GET SENSORS
 router.get('/', validateJWT, getSensors);
+
+router.get('/full-data', validateJWT, getFullData);
 
 // CREATE SENSOR
 router.post(
