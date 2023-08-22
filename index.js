@@ -36,6 +36,7 @@ app.use('/api/sensors', require('./routes/admin/sensorRoutes'));
 app.use('/api/data-consumption-ac', require('./routes/data/dataConsumptionACRoutes'));
 app.use('/api/data-consumption-devices', require('./routes/data/dataConsumptionDevicesRoutes'));
 app.use('/api/data-consumption-lighting', require('./routes/data/dataConsumptionLightingRoutes'));
+app.use('/api/data-count-people', require('./routes/data/dataCountPeopleRoutes'));
 
 // REPORTS
 app.use('/api/reports/energy-consumption', require('./routes/reports/energyConsumptionRoutes'));
