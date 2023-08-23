@@ -6,6 +6,10 @@ const SensorSchema = Schema({
         required: true,
         unique: true,
     },
+    minutesToStored: {
+        type: Number,
+        default: 5  // 5 minutos
+    },
     typeOfSensor: {
         type: Schema.Types.ObjectId,
         ref: 'TypeOfSensor',
