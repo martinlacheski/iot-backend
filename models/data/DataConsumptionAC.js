@@ -4,7 +4,7 @@ const DataConsumptionAC = Schema(
   {
     device: String,
     sensor: String,
-    timestamp: String,
+    timestamp: Date,
 
     // Data
     voltage: Number,

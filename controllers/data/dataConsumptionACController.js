@@ -26,31 +26,14 @@ const find = async (req, res = response) => {
   }
 };
 
-const create = async (req, res = response) => {
-  try {
-    const register = new DataConsumptionAC(req.body);
-    const result = await register.save();
-
-    return res.json({
-      ok: true,
-      msg: "Registro creado correctamente.",
-      result,
-    });
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      ok: false,
-      msg: "Error interno del servidor.",
-    });
-  }
-};
-
 const filterBetweenDates = async (req, res = response) => {
   try {
+    const { fromDate, toDate } = req.query;
+
     const recordsDataConsumptionAC = await DataConsumptionAC.find({
       timestamp: {
-        $gte: req.query.fromDate,
-        $lte: req.query.toDate,
+        $gte: fromDate,
+        $lte: toDate,
       },
     });
 
@@ -59,6 +42,8 @@ const filterBetweenDates = async (req, res = response) => {
     return res.json({
       ok: true,
       msg: "DataConsumptionAC filter-between-dates consultado correctamente.",
+      fromDate,
+      toDate,
       count,
       recordsDataConsumptionAC,
     });
@@ -73,7 +58,6 @@ const filterBetweenDates = async (req, res = response) => {
 
 const resume = async (req, res = response) => {
   try {
-
     const records = await DataConsumptionAC.find({
       timestamp: {
         $gte: req.query.fromDate,
@@ -85,13 +69,15 @@ const resume = async (req, res = response) => {
     const minutes = 5;
     const msInterval = minutes * 60 * 1000;
     const groupedData = {};
-    const totalConsumedEnergy = +(records[records.length - 1].energy - records[0].energy).toFixed(2); // [kWh]
+    const totalConsumedEnergy = +(
+      records[records.length - 1].energy - records[0].energy
+    ).toFixed(2); // [kWh]
 
     // Agrupar por fecha
     records.forEach((record) => {
-      const timestamp = new Date(record.timestamp);       // ! Importante: timestamp es un string (debemos guardarlo como Date en la BD)
-      const key = Math.floor(timestamp.getTime() / msInterval) * msInterval; 
-      const groupKey = new Date(key).toLocaleString();    
+      const timestamp = new Date(record.timestamp); // ! Importante: timestamp es un string (debemos guardarlo como Date en la BD)
+      const key = Math.floor(timestamp.getTime() / msInterval) * msInterval;
+      const groupKey = new Date(key).toLocaleString();
 
       if (!groupedData[groupKey]) {
         groupedData[groupKey] = [];
@@ -103,12 +89,20 @@ const resume = async (req, res = response) => {
     const averagedData = [];
     for (const groupKey in groupedData) {
       const group = groupedData[groupKey];
-      const averageVoltage = +(group.reduce((sum, record) => sum + record.voltage, 0) / group.length).toFixed(2);
-      const averageCurrent = +(group.reduce((sum, record) => sum + record.current, 0) / group.length).toFixed(2);
-      const averagePower = +(group.reduce((sum, record) => sum + record.power, 0) / group.length).toFixed(2);
+      const averageVoltage = +(
+        group.reduce((sum, record) => sum + record.voltage, 0) / group.length
+      ).toFixed(2);
+      const averageCurrent = +(
+        group.reduce((sum, record) => sum + record.current, 0) / group.length
+      ).toFixed(2);
+      const averagePower = +(
+        group.reduce((sum, record) => sum + record.power, 0) / group.length
+      ).toFixed(2);
       const consumedEnergy = +(averagePower * (minutes / 60)).toFixed(2);
-      const pf = +(group.reduce((sum, record) => sum + record.pf, 0) / group.length).toFixed(2);
-      
+      const pf = +(
+        group.reduce((sum, record) => sum + record.pf, 0) / group.length
+      ).toFixed(2);
+
       averagedData.push({
         timestamp: groupKey,
         voltage: averageVoltage,
@@ -137,7 +131,6 @@ const resume = async (req, res = response) => {
 
 module.exports = {
   find,
-  create,
   filterBetweenDates,
   resume,
 };

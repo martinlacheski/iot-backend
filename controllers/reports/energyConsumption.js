@@ -2,23 +2,14 @@ const { response } = require("express");
 const DataConsumptionAC = require("../../models/data/DataConsumptionAC");
 const DataConsumptionDevices = require("../../models/data/DataConsumptionDevices");
 const DataConsumptionLighting = require("../../models/data/DataConsumptionLighting");
+const getDateDiff = require("../../helpers/getDateDiff");
+const calculateMinutes = require("../../helpers/calculateMinutes");
 
 const getEnergyConsumption = async (req, res = response) => {
   try {
-    // OBTENEMOS LOS PARAMETROS DE LA URL
-    // const environment = req.query.environment;
-    const fromDate = req.query.fromDate;
-    const toDate = req.query.toDate;
-    const diffInHours = +req.query.diffInHours;
-    
-    // Obtenemos días horas y minutos de diferencia
-    const days = Math.floor(diffInHours / 24);
-    const hours = Math.floor(diffInHours % 24);
-    const mins = Math.floor((diffInHours * 60) % 60);
-    const daysString = days > 0 ? `${days} días ` : "";
-    const hoursString = hours > 0 ? `${hours} horas ` : "";
-    const minsString = mins > 0 ? `${mins} minutos` : "";
-    const diff = `${daysString}${hoursString}${minsString}`;
+    // OBTENER FECHAS
+    const { fromDate, toDate } = req.query;
+    const { diff, diffInHours } = getDateDiff(fromDate, toDate);
 
     // OBTENEMOS LOS REGISTROS DE LA BASE DE DATOS
     const recordsAC = await DataConsumptionAC.find({
@@ -27,12 +18,14 @@ const getEnergyConsumption = async (req, res = response) => {
         $lte: toDate,
       },
     });
+
     const recordsDevices = await DataConsumptionDevices.find({
       timestamp: {
         $gte: fromDate,
         $lte: toDate,
       },
     });
+
     const recordsLighting = await DataConsumptionLighting.find({
       timestamp: {
         $gte: fromDate,
@@ -46,63 +39,44 @@ const getEnergyConsumption = async (req, res = response) => {
     const countLighting = recordsLighting.length;
 
     // VARIABLES PARA CALCULOS
-    let minutes = 0;
-    if (0 < diffInHours && diffInHours <= 6) {
-      // ENTRE 0 Y 6 HORAS
-      minutes = 10;
-    } else if (6 < diffInHours && diffInHours <= 12) {
-      // ENTRE 6 Y 12 HORAS
-      minutes = 15;
-    } else if (12 < diffInHours && diffInHours <= 24) {
-      // ENTRE 12 Y 24 HORAS
-      minutes = 30;
-    } else if (24 < diffInHours && diffInHours <= 48) {
-      // ENTRE 24 Y 48 HORAS
-      minutes = 60;
-    } else if (48 < diffInHours && diffInHours <= 72) {
-      // ENTRE 48 Y 72 HORAS
-      minutes = 90;
-    } else if (72 < diffInHours && diffInHours <= 168) {
-      // ENTRE 72 Y 168 HORAS
-      minutes = 120;
-    } else if (168 < diffInHours && diffInHours <= 336) {
-      // ENTRE 168 Y 336 HORAS
-      minutes = 240;
-    } else if (336 < diffInHours && diffInHours <= 504) {
-      // ENTRE 336 Y 504 HORAS
-      minutes = 480;
-    } else if (504 < diffInHours && diffInHours <= 672) {
-      // ENTRE 504 Y 672 HORAS
-      minutes = 960;
-    } else if (672 < diffInHours && diffInHours <= 730) {
-      // ENTRE 672 Y 840 HORAS
-      minutes = 120;
-    }
+    let minutes = calculateMinutes(diffInHours);
 
     const msInterval = minutes * 60 * 1000;
 
     // CALCULOS DE CONSUMO DE ENERGIA
-    const totalEnergyConsumptionAC = +(
-      recordsAC[countAC - 1].energy - recordsAC[0].energy
-    ).toFixed(2);
-    const hourlyEnergyConsumptionAC = +(
-      totalEnergyConsumptionAC / diffInHours
-    ).toFixed(4);
+    let totalEnergyConsumptionAC = 0,
+      hourlyEnergyConsumptionAC = 0;
+    if (countAC > 0) {
+      totalEnergyConsumptionAC = +(
+        recordsAC[countAC - 1].energy - recordsAC[0].energy
+      ).toFixed(2);
+      hourlyEnergyConsumptionAC = +(
+        totalEnergyConsumptionAC / diffInHours
+      ).toFixed(4);
+    }
 
-    const totalEnergyConsumptionDevices = +(
-      recordsDevices[countDevices - 1].energy - recordsDevices[0].energy
-    ).toFixed(2);
-    const hourlyEnergyConsumptionDevices = +(
-      totalEnergyConsumptionDevices / diffInHours
-    ).toFixed(4);
+    let totalEnergyConsumptionDevices = 0,
+      hourlyEnergyConsumptionDevices = 0;
+    if (countDevices > 0) {
+      totalEnergyConsumptionDevices = +(
+        recordsDevices[countDevices - 1].energy - recordsDevices[0].energy
+      ).toFixed(2);
+      hourlyEnergyConsumptionDevices = +(
+        totalEnergyConsumptionDevices / diffInHours
+      ).toFixed(4);
+    }
 
-    const totalEnergyConsumptionLighting = +(
-      recordsLighting[countLighting - 1].energy - recordsLighting[0].energy
-    ).toFixed(2);
-    const hourlyEnergyConsumptionLighting = +(
-      totalEnergyConsumptionLighting / diffInHours
-    ).toFixed(4);
-    
+    let totalEnergyConsumptionLighting = 0,
+      hourlyEnergyConsumptionLighting = 0;
+    if (countLighting > 0) {
+      totalEnergyConsumptionLighting = +(
+        recordsLighting[countLighting - 1].energy - recordsLighting[0].energy
+      ).toFixed(2);
+      hourlyEnergyConsumptionLighting = +(
+        totalEnergyConsumptionLighting / diffInHours
+      ).toFixed(4);
+    }
+
     // UNIFICAR LOS REGISTROS DE LOS DISTINTOS SENSORES
     const records = [...recordsAC, ...recordsDevices, ...recordsLighting];
 
@@ -149,57 +123,75 @@ const getEnergyConsumption = async (req, res = response) => {
       const group = groupedData[groupKey];
 
       // AC
-      const averageVoltageAC = +(
-        group.ac.reduce((sum, record) => sum + record.voltage, 0) /
-        group.ac.length
-      ).toFixed(2);
-      const averageCurrentAC = +(
-        group.ac.reduce((sum, record) => sum + record.current, 0) /
-        group.ac.length
-      ).toFixed(2);
-      const averagePowerAC = +(
-        group.ac.reduce((sum, record) => sum + record.power, 0) /
-        group.ac.length
-      ).toFixed(2);
-      const pfAC = +(
-        group.ac.reduce((sum, record) => sum + record.pf, 0) / group.ac.length
-      ).toFixed(2);
+      let averageVoltageAC = 0,
+        averageCurrentAC = 0,
+        averagePowerAC = 0,
+        pfAC = 0;
+      if (group.ac.length > 0) {
+        averageVoltageAC = +(
+          group.ac.reduce((sum, record) => sum + record.voltage, 0) /
+          group.ac.length
+        ).toFixed(2);
+        averageCurrentAC = +(
+          group.ac.reduce((sum, record) => sum + record.current, 0) /
+          group.ac.length
+        ).toFixed(2);
+        averagePowerAC = +(
+          group.ac.reduce((sum, record) => sum + record.power, 0) /
+          group.ac.length
+        ).toFixed(2);
+        pfAC = +(
+          group.ac.reduce((sum, record) => sum + record.pf, 0) / group.ac.length
+        ).toFixed(2);
+      }
 
       // DEVICES
-      const averageVoltageDevices = +(
-        group.devices.reduce((sum, record) => sum + record.voltage, 0) /
-        group.devices.length
-      ).toFixed(2);
-      const averageCurrentDevices = +(
-        group.devices.reduce((sum, record) => sum + record.current, 0) /
-        group.devices.length
-      ).toFixed(2);
-      const averagePowerDevices = +(
-        group.devices.reduce((sum, record) => sum + record.power, 0) /
-        group.devices.length
-      ).toFixed(2);
-      const pfDevices = +(
-        group.devices.reduce((sum, record) => sum + record.pf, 0) /
-        group.devices.length
-      ).toFixed(2);
+      let averageVoltageDevices = 0,
+        averageCurrentDevices = 0,
+        averagePowerDevices = 0,
+        pfDevices = 0;
+      if (group.devices.length > 0) {
+        averageVoltageDevices = +(
+          group.devices.reduce((sum, record) => sum + record.voltage, 0) /
+          group.devices.length
+        ).toFixed(2);
+        averageCurrentDevices = +(
+          group.devices.reduce((sum, record) => sum + record.current, 0) /
+          group.devices.length
+        ).toFixed(2);
+        averagePowerDevices = +(
+          group.devices.reduce((sum, record) => sum + record.power, 0) /
+          group.devices.length
+        ).toFixed(2);
+        pfDevices = +(
+          group.devices.reduce((sum, record) => sum + record.pf, 0) /
+          group.devices.length
+        ).toFixed(2);
+      }
 
       // LIGHTING
-      const averageVoltageLighting = +(
-        group.lighting.reduce((sum, record) => sum + record.voltage, 0) /
-        group.lighting.length
-      ).toFixed(2);
-      const averageCurrentLighting = +(
-        group.lighting.reduce((sum, record) => sum + record.current, 0) /
-        group.lighting.length
-      ).toFixed(2);
-      const averagePowerLighting = +(
-        group.lighting.reduce((sum, record) => sum + record.power, 0) /
-        group.lighting.length
-      ).toFixed(2);
-      const pfLighting = +(
-        group.lighting.reduce((sum, record) => sum + record.pf, 0) /
-        group.lighting.length
-      ).toFixed(2);
+      let averageVoltageLighting = 0,
+        averageCurrentLighting = 0,
+        averagePowerLighting = 0,
+        pfLighting = 0;
+      if (group.lighting.length > 0) {
+        averageVoltageLighting = +(
+          group.lighting.reduce((sum, record) => sum + record.voltage, 0) /
+          group.lighting.length
+        ).toFixed(2);
+        averageCurrentLighting = +(
+          group.lighting.reduce((sum, record) => sum + record.current, 0) /
+          group.lighting.length
+        ).toFixed(2);
+        averagePowerLighting = +(
+          group.lighting.reduce((sum, record) => sum + record.power, 0) /
+          group.lighting.length
+        ).toFixed(2);
+        pfLighting = +(
+          group.lighting.reduce((sum, record) => sum + record.pf, 0) /
+          group.lighting.length
+        ).toFixed(2);
+      }
 
       // GUARDAR LOS DATOS PROMEDIADOS DE CADA GRUPO
       averagedVoltageDataAC.push(averageVoltageAC);
