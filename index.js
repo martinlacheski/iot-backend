@@ -41,6 +41,8 @@ app.use('/api/data-count-people', require('./routes/data/dataCountPeopleRoutes')
 // REPORTS
 app.use('/api/reports/energy-consumption', require('./routes/reports/energyConsumptionRoutes'));
 
+app.use('/api/reports/gases', require('./routes/reports/airQualityRoutes'));
+
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${process.env.PORT}`);
