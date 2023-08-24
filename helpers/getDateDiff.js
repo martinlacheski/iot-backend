@@ -10,7 +10,7 @@ const getDateDiff = (date1, date2) => {
   const daysString = days > 0 ? `${days} días ` : "";
   const hoursString = hours > 0 ? `${hours} horas ` : "";
   const minsString = mins > 0 ? `${mins} minutos` : "";
-  const diff = `${daysString}${hoursString}${minsString}`;
+  const diff = `${daysString}${hoursString}${minsString}`.trim();
 
   return {
     diff,
