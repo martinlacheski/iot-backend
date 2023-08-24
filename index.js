@@ -42,6 +42,7 @@ app.use('/api/data-count-people', require('./routes/data/dataCountPeopleRoutes')
 app.use('/api/reports/energy-consumption', require('./routes/reports/energyConsumptionRoutes'));
 
 app.use('/api/reports/gases', require('./routes/reports/airQualityRoutes'));
+app.use('/api/reports/energy-waste', require('./routes/reports/energyWasteRoutes'));
 
 // Escuchar peticiones
 app.listen(process.env.PORT, () => {
