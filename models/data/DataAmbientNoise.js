@@ -1,14 +1,14 @@
 const { Schema, model } = require("mongoose");
 
-const DataCountPeople = Schema(
+const DataAmbientNoise = Schema(
   {
     device: String,
     sensor: String,
     timestamp: Date,
 
     // Data
-    count: Number,
+    level: Number,
   }
 );
 
-module.exports = model("DataCountPeople", DataCountPeople, "dataCountPeople");
+module.exports = model("DataAmbientNoise", DataAmbientNoise, "dataAmbientNoise");
