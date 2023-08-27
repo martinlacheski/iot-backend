@@ -1,6 +1,7 @@
 const calculateMinutes = (diffInHours) => {
   const timeGroups = [
-    { hours: 1, minutes: 5 },
+    { hours: 1, minutes: 2 },
+    { hours: 2, minutes: 5 },
     { hours: 3, minutes: 10 },
     { hours: 6, minutes: 15 },
     { hours: 12, minutes: 30 },

@@ -1,14 +1,14 @@
 const { Schema, model } = require("mongoose");
 
-const DataCountPeople = Schema(
+const DataDoorsStatus = Schema(
   {
     device: String,
     sensor: String,
     timestamp: Date,
 
     // Data
-    count: Number,
+    areOpen: Boolean,
   }
 );
 
-module.exports = model("DataCountPeople", DataCountPeople, "dataCountPeople");
+module.exports = model("DataDoorsStatus", DataDoorsStatus, "dataDoorsStatus");
