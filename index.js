@@ -17,6 +17,9 @@ app.use(cors());
 // Middleware para lectura y parseo del body (JSON)
 app.use(express.json());
 
+// Exponer carpeta uploads
+app.use(express.static('uploads'));
+
 // Rutas
 app.use('/api/auth', require('./routes/admin/authRoutes'));
 app.use('/api/countries', require('./routes/admin/countryRoutes'));
