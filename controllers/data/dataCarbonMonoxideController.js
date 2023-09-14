@@ -29,7 +29,8 @@ async function getMinMaxBetweenDatesMQ7(fromDate, toDate, minutes) {
     // OBTENER VALORES MINIMOS Y MAXIMOS DE CADA GRUPO
     const labels = [],
       mins = [],
-      maxs = [];
+      maxs = [],
+      limits = [];
     // const minMaxData = {};
     for (const key in groupedData) {
       const group = groupedData[key];
@@ -38,7 +39,7 @@ async function getMinMaxBetweenDatesMQ7(fromDate, toDate, minutes) {
       labels.push(key);
       mins.push(min);
       maxs.push(max);
-      // minMaxData[key] = { min, max };    // { "2021-06-01 00:00:00": { min: 0, max: 0 } }
+      limits.push(200);
     }
 
     return {
@@ -47,6 +48,8 @@ async function getMinMaxBetweenDatesMQ7(fromDate, toDate, minutes) {
       labels,
       mins,
       maxs,
+      limits,
+      maxLimit: 400,
     };
   } catch (error) {
     console.log(error);
