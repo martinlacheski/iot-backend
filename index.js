@@ -22,6 +22,9 @@ app.use(express.static('uploads'));
 
 // Rutas
 app.use('/api/auth', require('./routes/admin/authRoutes'));
+app.use('/api/roles', require('./routes/admin/roleRoutes'));
+app.use('/api/users', require('./routes/admin/userRoutes'));
+
 app.use('/api/countries', require('./routes/admin/countryRoutes'));
 app.use('/api/provinces', require('./routes/admin/provinceRoutes'));
 app.use('/api/cities', require('./routes/admin/cityRoutes'));
