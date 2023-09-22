@@ -1,49 +1,8 @@
 const { response } = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/admin/User");
+const Role = require("../../models/admin/Role");
 const { generateJWT } = require("../../helpers/generateJWT");
-
-const register = async (req, res = response) => {
-  const { email, password } = req.body;
-
-  try {
-    // Verificar que el email no exista
-    let usuario = await User.findOne({ email });
-    if (usuario) {
-      return res.status(400).json({
-        ok: false,
-        msg: "Ya existe un usuario con ese email.",
-      });
-    }
-
-    // Crear usuario con el modelo
-    usuario = new User(req.body);
-
-    // Encriptar contraseña
-    const salt = bcrypt.genSaltSync();
-    usuario.password = bcrypt.hashSync(password, salt);
-
-    // Guardar usuario en la base de datos
-    await usuario.save();
-
-    // Generar el JWT
-    const token = await generateJWT(usuario.id, usuario.name);
-
-    // Devolver respuesta exitosa
-    res.status(201).json({
-      ok: true,
-      uid: usuario._id,
-      name: usuario.name,
-      token,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      ok: false,
-      msg: "Error interno del servidor.",
-    });
-  }
-};
 
 // LOGIN
 const login = async (req, res = response) => {
@@ -68,15 +27,19 @@ const login = async (req, res = response) => {
       });
     }
 
+    // NOMBRE DEL ROL ASOCIADO
+    const role = await Role.findById(usuario.role);
+
     // Generar el JWT
-    const token = await generateJWT(usuario.id, usuario.name);
+    const token = await generateJWT(usuario.id, usuario.name, role.name);
 
     // Devolver respuesta exitosa
     res.status(200).json({
       ok: true,
       uid: usuario._id,
       name: usuario.name,
-      token,
+      role: role.name,
+      token
     });
   } catch (error) {
     console.log(error);
@@ -89,23 +52,24 @@ const login = async (req, res = response) => {
 
 // REVALIDATE TOKEN
 const revalidateToken = async (req, res = response) => {
-  const { uid, name } = req;
+  const { uid, name, role } = req;
+  console.log(uid, name, role);
 
   // Generar el JWT
-  const token = await generateJWT(uid, name);
+  const token = await generateJWT(uid, name, role);
 
   // Devolver respuesta exitosa
   res.status(200).json({
     ok: true,
-    msg: "Token renovado.",
+    msg: "Token renovado correctamente",
     uid,
     name,
+    role,
     token,
   });
 };
 
 module.exports = {
-  register,
   login,
   revalidateToken,
 };
