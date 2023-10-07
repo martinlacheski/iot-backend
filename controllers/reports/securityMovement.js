@@ -61,6 +61,7 @@ const getData = async (req, res = response) => {
       }
     });
 
+
     const keys = Object.keys(groupedData);
 
     keys.forEach((key) => {
@@ -68,7 +69,10 @@ const getData = async (req, res = response) => {
         const { motionDetection, countPeople, windowsStatus, doorsStatus } =
           groupedData[key];
 
-        const motionDetectionCount = motionDetection.length;
+        // Filtrar la cantidad de detecciones de movimiento (movementDetected = true)
+        const motionDetectionCount = motionDetection.filter(
+          (record) => record.movementDetected
+        ).length;
 
         let countPeopleInitial = 0,
           countPeopleFinal = 0,
