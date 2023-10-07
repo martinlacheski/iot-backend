@@ -11,7 +11,10 @@ const { Types } = require("mongoose");
  */
 const getOrganization = async (req, res = response) => {
   try {
-    const organization = await Organization.findOne();
+    const organization = await Organization.findOne().populate({
+      path: "city",
+      select: "name",
+    });
     res.json({
       ok: true,
       organization,
